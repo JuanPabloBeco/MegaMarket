@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+
+{% block extra_head %}
+
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all"/>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    {% load static %}
+    <script type="text/javascript" src="{% static 'js/dropdowns.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bought_chart.js' %}"></script>
+
+    <style>
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+            font-size: 11px;
+        }
+    </style>
+
+    {#    <script>#}
+    {#        $(dropdown_definition());#}
+    {#    </script>#}
+
+{% endblock extra_head %}
+
+{% block content %}
+
+    <div class="demo">
+
+        <form action="#">
+            <fieldset>
+                <label>Select your filters</label>
+                <label for="geos">Location</label>
+                <select name="geos" id="geos">
+                    <option value="-1">All</option>
+                </select>
+
+                <label for="items">Item</label>
+                <select name="items" class="category_system_selects" id="items">
+                    <option value="-1">All</option>
+                </select>
+
+                <label for="subcategories">Subcategories</label>
+                <select name="subcategories" class="category_system_selects" id="subcategories">
+                    <option value="-1">All</option>
+                </select>
+
+                <label for="categories">Category</label>
+                <select name="categories" class="category_system_selects" id="categories">
+                    <option value="-1">All</option>
+                </select>
+
+                <label for="target_users">Target User</label>
+                <select name="target_users" id="target_users">
+                    <option value="-1">All</option>
+                </select>
+
+            </fieldset>
+
+        </form>
+
+    </div>
+
+    <div id="chartdiv"></div>
+
+    <div class="col-md-4 col-md-offset-4 form-div">
+        <form class="form-vertical" action="{% url 'dashboard' %}" method="POST">
+
+            {{ form.non_field_errors }}
+
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    <label for="{{ field.id_for_label }}">{{ field.name }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <input type="submit" value="Submit"/>
+        </form>
+    </div>
+{% endblock content %}
+
+{% block javascript_footer %}
+    <script>
+        {#categories_subcategories_items_filter_data = ;#}
+        var categories_subcategories_items_filter_data = JSON.parse('{{ categories_subcategories_items_filter_options | safe}}')
+        var geo_filter_data = JSON.parse('{{ geo_filter_options | safe}}')
+        var target_user_geo_filter_data = JSON.parse('{{ target_user_filter_options | safe}}')
+
+        var chart_date_format = "{{chart_date_format}}"
+
+        let initial_filters = {
+            // csrfmiddlewaretoken: '{{ csrf_token }}',
+            date__lt: '2000-3-29',
+            date__gt: '2000-1-1',
+            // item_id: 3,
+            // target_user_id: 1,
+            geo_id: 1,
+        }
+        $(document).ready(find_category_subcategory_or_item(1))
+
+
+        $(document).ready(bought_chart("{{chart_date_format}}", initial_filters));
+        $(document).ready(filling_filter_options(
+            categories_subcategories_items_filter_data,
+            geo_filter_data,
+            target_user_geo_filter_data,
+        ));
+
+        function refresh_chart(chart_date_format) {
+            let filters_to_apply = {
+                date__lt: '2000-3-29',
+                date__gt: '2000-1-1',
+            }
+
+            if ($('#categories')[0].value != -1) {
+                filters_to_apply.item__sub_category__category_id = $('#categories')[0].value
+                if ($('#subcategories')[0].value != -1) {
+                    filters_to_apply.item__sub_category_id = $('#subcategories')[0].value
+                    if ($('#items')[0].value != -1) {
+                        filters_to_apply.item_id = $('#items')[0].value
+                    }
+                }
+            }
+            if ($('#geos')[0].value != -1) {
+                filters_to_apply.geo_id = $('#geos')[0].value
+            }
+            if ($('#target_users')[0].value != -1) {
+                filters_to_apply.target_user_id = $('#target_users')[0].value
+            }
+            bought_chart(chart_date_format, filters_to_apply)
+        }
+
+        $('#categories').change(function () {
+            {#refresh_chart(chart_date_format)#}
+        });
+        $('#subcategories').change(function () {
+            {#refresh_chart(chart_date_format)#}
+        });
+        $('#items').change(function () {
+            {#refresh_chart(chart_date_format)#}
+        });
+        $('#geos').change(function () {
+            refresh_chart(chart_date_format)
+        });
+        $('#target_users').change(function () {
+            refresh_chart(chart_date_format)
+        });
+        $('.category_system_selects').change(function (event) {
+
+            if (event.currentTarget.id == 'categories') {
+                object_type = 'category'
+                {#$('#subcategories').empty();#}
+                {#$('#items').empty();#}
+            }
+            else if (event.currentTarget.id == 'subcategories') {
+                object_type = 'subcategory'
+                {#$('#categories').empty();#}
+                {#$('#items').empty();#}
+            }
+            else if (event.currentTarget.id == 'items') {
+                object_type = 'item'
+                {#$('#categories').empty();#}
+                {#$('#subcategories').empty();#}
+            }
+            else {
+                return ('unidentifyed type')
+            }
+
+            let object_id = event.currentTarget.value
+
+            $('#categories').empty();
+            $('#subcategories').empty();
+            $('#items').empty();
+
+            if (object_id == -1) {
+                {#$('#categories').empty();#}
+                {#$('#subcategories').empty();#}
+                {#$('#items').empty();#}
+                $('#categories').append('<option value="-1">All</option>');
+                $('#subcategories').append('<option value="-1">All</option>');
+                $('#items').append('<option value="-1">All</option>');
+                filling_category_subcategory_item_filter_options(categories_subcategories_items_filter_data)
+            }
+            else {
+                let selected_object_data = find_category_subcategory_or_item(object_id, object_type)
+
+                if (object_type == 'category') {
+                    $('#categories').append('<option value="-1">All</option>');
+                    $('#subcategories').append('<option value="-1">All</option>');
+                    $('#items').append('<option value="-1">All</option>');
+                    filling_category_subcategory_item_filter_options([selected_object_data])
+                    $('#categories')[0].value = object_id
+                }
+                else if (object_type == 'subcategory') {
+                    $('#subcategories').append('<option value="-1">All</option>');
+                    $('#items').append('<option value="-1">All</option>');
+                    filling_category_subcategory_item_filter_options([selected_object_data])
+
+                    $('#subcategories')[0].value = object_id
+                }
+                else if (event.currentTarget.id == 'items') {
+                    $('#items').append('<option value="-1">All</option>');
+                    filling_category_subcategory_item_filter_options([selected_object_data])
+                    $('#items')[0].value = object_id
+                }
+                else {
+                    return ('unidentifyed type')
+                }
+            }
+
+            refresh_chart(chart_date_format)
+        });
+
+    </script>
+{% endblock javascript_footer %}
