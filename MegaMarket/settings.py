@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mega_market_core',
-    'celery'
+    'celery',
 ]
 
 MIDDLEWARE = [
