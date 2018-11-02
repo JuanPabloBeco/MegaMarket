@@ -1,10 +1,12 @@
-import datetime
+from datetime import datetime, timedelta
 from random import randrange
+
+import logging
 
 from celery import shared_task
 
 from mega_market_core.data_generator import INITIAL_AMOUNT, MAX_DAILY_TRANSACTION
-from mega_market_core.models import Transaction, Item, TargetUser, Geo
+from mega_market_core.models import Item, TargetUser, Geo, Buy, Sell
 
 
 @shared_task
@@ -20,6 +22,9 @@ def create_random_user_accounts():
 
         transaction_amount = randrange(INITIAL_AMOUNT * 0.1, INITIAL_AMOUNT * 0.9)
         transaction_price = Item(id=temp_item_id).generate_next_price()
+
+        random_days = randrange(0, 30)
+        day = datetime(2000, 1, 1, 0, 0, 0) + timedelta(days=random_days)
 
         if randrange(0, 2):
             temp_transaction = Buy(

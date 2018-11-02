@@ -2,7 +2,7 @@ import logging
 from datetime import date, timedelta, datetime
 from random import randrange
 
-from mega_market_core.models import Category, SubCategory, Item, Geo, Transaction, TargetUser, Buy, Sell
+from mega_market_core.models import Category, SubCategory, Item, Geo, TargetUser, Buy, Sell
 
 INITIAL_AMOUNT = 1000000
 MAX_INITIAL_UNIT_PRICE = 100
@@ -24,6 +24,7 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
     temp_geo = Geo(country='Argentina', city='Buenos Aires', id=2)
     temp_geo = Geo(country='Brasil', city='Rio de Janeiro', id=3)
     temp_geo.save()
+
 
     for i in range(1, 6):
         temp_category = Category(name='Category%s' % i, id=i)
