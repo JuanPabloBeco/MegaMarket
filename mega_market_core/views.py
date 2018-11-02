@@ -18,36 +18,41 @@ def dashboard(request):
     :return:
     """
 
+    categories = Category.objects.all()
+    category_subcategory_item_filter_serializer = CategorySerializer(data=categories, many=True)
+    category_subcategory_item_filter_serializer.is_valid()
+    category_subcategory_item_filter_serializer_json = json.dumps(category_subcategory_item_filter_serializer.data)
+
+    geos = Geo.objects.all()
+    geo_filter_serializer = GeoSerializer(data=geos, many=True)
+    geo_filter_serializer.is_valid()
+    geo_filter_serializer_json = json.dumps(geo_filter_serializer.data)
+
+    target_users = TargetUser.objects.all()
+    target_user_filter_serializer = TargetUserSerializer(data=target_users, many=True)
+    target_user_filter_serializer.is_valid()
+    target_user_filter_serializer_json = json.dumps(target_user_filter_serializer.data)
+
+    return render(request, 'dashboard.html', {
+        'chart_date_format': CHART_DATE_FORMAT_FOR_AMCHARTS,
+        'categories_subcategories_items_filter_options': category_subcategory_item_filter_serializer_json,
+        'geo_filter_options': geo_filter_serializer_json,
+        'target_user_filter_options': target_user_filter_serializer_json,
+    })
+
+
+def ticket(request):
+
     if request.method == GET:
         form = TransactionForm()
-
-        categories = Category.objects.all()
-        category_subcategory_item_filter_serializer = CategorySerializer(data=categories, many=True)
-        category_subcategory_item_filter_serializer.is_valid()
-        category_subcategory_item_filter_serializer_json = json.dumps(category_subcategory_item_filter_serializer.data)
-
-        geos = Geo.objects.all()
-        geo_filter_serializer = GeoSerializer(data=geos, many=True)
-        geo_filter_serializer.is_valid()
-        geo_filter_serializer_json = json.dumps(geo_filter_serializer.data)
-
-        target_users = TargetUser.objects.all()
-        target_user_filter_serializer = TargetUserSerializer(data=target_users, many=True)
-        target_user_filter_serializer.is_valid()
-        target_user_filter_serializer_json = json.dumps(target_user_filter_serializer.data)
-
         return render(request, 'dashboard.html', {
             'form': form,
-            'chart_date_format': CHART_DATE_FORMAT_FOR_AMCHARTS,
-            'categories_subcategories_items_filter_options': category_subcategory_item_filter_serializer_json,
-            'geo_filter_options': geo_filter_serializer_json,
-            'target_user_filter_options': target_user_filter_serializer_json,
         })
 
     elif request.method == POST:
         form = TransactionForm(request.POST)
-        template = 'dashboard.html'
+        template = 'ticket.html'
 
     else:
-        response = redirect(reverse('dashboard'))
+        response = redirect(reverse('ticket'))
         return response

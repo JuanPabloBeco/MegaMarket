@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import log
 import logging
 
-from api.serializers import CategorySerializer, SubCategorySerializer
+from api.serializers import CategorySerializer, SubCategorySerializer, EarnSerializer
 from mega_market_core.models import Buy, Category, SubCategory, Item, TargetUser, Geo
 
 
@@ -74,13 +74,13 @@ class BuySerializerTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         expected_response = {
-            "values": [
-                {"date": "2018-10-01", "price": 10},
-                {"date": "2018-10-02", "price": 10},
+            "bought_report_chart": [
+                {"date": "2018-10-01", "data_sum": 10},
+                {"date": "2018-10-02", "data_sum": 10},
             ]
         }
 
-        self.assertEqual(response.body, expected_response)
+        self.assertEqual(response.data, expected_response)
 
     def test_buy_get_list(self):
         data = {
@@ -115,3 +115,4 @@ class BuySerializerTest(TestCase):
             'id': 1
         }
         self.assertEqual(dict(serializer.data[0]), expected_response)
+

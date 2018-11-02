@@ -62,47 +62,7 @@ class TargetUser(models.Model):
     name = models.CharField(max_length=100)
 
 
-class Transaction(models.Model):
-    BUY = 'BUY'
-    SELL = 'SELL'
-    # The type sign is defined accordingly to the money interpretation of the transaction, if it is a buy transaction
-    # the money is used to pay so it goes away from our funds so it is a negative transaction.
-    TRANSACTION_TYPE_CHOICES = ((BUY, -1), (SELL, 1))
-
-    type = models.CharField(max_length=5, choices=TRANSACTION_TYPE_CHOICES)
-    amount = models.IntegerField()
-    unit_price = models.FloatField()
-    date = models.DateTimeField()
-    target_user = models.ForeignKey(TargetUser, related_name="transactions", on_delete=models.PROTECT)
-    geo = models.ForeignKey(Geo, related_name="transactions", on_delete=models.PROTECT)
-    item = models.ForeignKey(Item, related_name="transactions", on_delete=models.PROTECT)
-
-    # def save(self, *args, **kwargs):
-    #     item = self.item
-    #     item.stock += self.amount * self.type * -1  # the -1 is because the stock and the money transaction are opposites
-    #     item.save()
-    #     super(Transaction, self).save(*args, **kwargs)
-
-    def get_bought_list_by_date_filtered(**kargs):
-        filters = kargs
-        bought_list = Transaction.objects.filter(**filters, type=Transaction.BUT).values('date').annotate(
-            data_sum=ExpressionWrapper(
-                Sum(F('unit_price') * F('amount')), output_field=models.FloatField()
-            )
-        ).order_by('date')
-
-        for day in bought_list:
-            day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
-        return bought_list
-
-
-
-    def __str__(self):
-        return '%s, %s, %s, %s, %s' % (self.id, self.item.name, str(self.date), self.amount, self.unit_price)
-
-
 class Buy(models.Model):
-    amount = models.IntegerField()
     amount = models.IntegerField()
     unit_price = models.FloatField()
     date = models.DateTimeField()
@@ -127,6 +87,7 @@ class Buy(models.Model):
 
         for day in bought_list:
             day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['data_sum'] = round(day['data_sum'],2)
         return bought_list
 
     def __str__(self):
@@ -158,16 +119,8 @@ class Sell(models.Model):
 
         for day in sold_list:
             day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['data_sum'] = round(day['data_sum'],2)
         return sold_list
 
     def __str__(self):
         return '%s, %s, %s, %s, %s' % (self.id, self.item.name, str(self.date), self.amount, self.unit_price)
-
-#
-#     Query para sacar ganancias usando transaction igual para Buy y Sell y la suma se podria hacer la grafica
-# Transaction.objects.filter(**filters).values('date').annotate(data_sum=Sum('amount')).order_by('date')
-#
-#
-# Buy.objects.filter(**filters).values('date').annotate(data_sum=Sum('amount')).order_by('date')
-# Sell.objects.filter(**filters).values('date').annotate(data_sum=Sum('amount')).order_by('date')
-#

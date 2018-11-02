@@ -10,7 +10,7 @@ MAX_INITIAL_UNIT_PRICE_STEP = 1
 INITIAL_DATE = datetime(2000, 1, 1, 0, 0, 0)
 TRANSACTION_AMOUNT = 50
 DAY_RANGE = 100
-MAX_DAILY_TRANSACTION = 5
+MAX_DAILY_TRANSACTION = 10
 
 
 def data_generator(initial_amount=INITIAL_AMOUNT,
@@ -20,7 +20,9 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                    day_range=DAY_RANGE,
                    max_daily_transaction=MAX_DAILY_TRANSACTION):
     unit_prices = []
-    temp_geo = Geo(country='Uruguay', id=1)
+    temp_geo = Geo(country='Uruguay', city='Montevideo', id=1)
+    temp_geo = Geo(country='Argentina', city='Buenos Aires', id=2)
+    temp_geo = Geo(country='Brasil', city='Rio de Janeiro', id=3)
     temp_geo.save()
 
     for i in range(1, 6):
