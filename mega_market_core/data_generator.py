@@ -4,12 +4,13 @@ from random import randrange
 
 from mega_market_core.models import Category, SubCategory, Item, Geo, TargetUser, Buy, Sell
 
-INITIAL_AMOUNT = 1000000
+
+INITIAL_AMOUNT = 1000
 MAX_INITIAL_UNIT_PRICE = 100
 MAX_INITIAL_UNIT_PRICE_STEP = 1
-INITIAL_DATE = datetime(2000, 1, 1, 0, 0, 0)
+INITIAL_DATE = datetime(2018, 1, 1, 0, 0, 0)
 TRANSACTION_AMOUNT = 50
-DAY_RANGE = 100
+DAY_RANGE = 300
 MAX_DAILY_TRANSACTION = 10
 
 
@@ -88,7 +89,7 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                     geo_id=temp_geo_id,
                 )
 
-            logging.warning(temp_transaction)
+            # logging.warning(temp_transaction)
             try:
                 temp_transaction.save()
             except Exception as e:

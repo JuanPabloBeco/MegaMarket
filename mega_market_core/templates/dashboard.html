@@ -43,8 +43,8 @@
     <div>
 
         <form>
-            <fieldset>
-                <label>Select your filters</label>
+            <fieldset id="filters">
+                <legend>Select your filters</legend>
                 <label for="geos">Location</label>
                 <select name="geos" id="geos">
                     <option value="-1">All</option>
@@ -72,8 +72,8 @@
 
                 <label for="date_options">Date</label>
                 <select name="date_options" id="date_options">
-                    <option value="Last Year">Last Month</option>
-                    <option value="Last Month">Last Year</option>
+                    <option selected value="Last Year">Last Year</option>
+                    <option value="Last Month">Last Month</option>
                     <option value="Yesterday">Yesterday</option>
                     <option value="Custom Range">Custom Range</option>
                 </select>
@@ -98,25 +98,32 @@
         var categories_subcategories_items_filter_data = JSON.parse('{{ categories_subcategories_items_filter_options | safe}}')
         var geo_filter_data = JSON.parse('{{ geo_filter_options | safe}}')
         var target_user_geo_filter_data = JSON.parse('{{ target_user_filter_options | safe}}')
-
         var chart_date_format = "{{chart_date_format}}"
+        let initial_filters = {
+            date__lt: '2018-6-29',
+            date__gt: '2018-1-1',
+        }
+
+        $(document).ready(function () {
+            draw_data_range_inputs();
+            find_category_subcategory_or_item(1);
+            chart_tools("{{chart_date_format}}", initial_filters);
+            filling_filter_options(
+                categories_subcategories_items_filter_data,
+                geo_filter_data,
+                target_user_geo_filter_data,
+            );
+        })
 
         var myVar = setInterval(refresh_chart(chart_date_format), 1);
-        let initial_filters = {
-            date__lt: '2000-6-29',
-            date__gt: '2000-1-1',
-        }
-        $(document).ready(find_category_subcategory_or_item(1));
 
-        {#setInterval(refresh_chart(chart_date_format), 1);#}
+        {#$(document).ready(find_category_subcategory_or_item(1));#}
+        {#$(document).ready(chart_tools("{{chart_date_format}}", initial_filters));#}
+        {#$(document).ready(filling_filter_options(#}
+        {#    categories_subcategories_items_filter_data,#}
+        {#    geo_filter_data,#}
+        {#    target_user_geo_filter_data,));#}
 
-        $(document).ready(chart_tools("{{chart_date_format}}", initial_filters));
-        $(document).ready(filling_filter_options(
-            categories_subcategories_items_filter_data,
-            geo_filter_data,
-            target_user_geo_filter_data,
-            )
-        );
         var timerabc = setInterval(function () {
                 refresh_chart(chart_date_format)
             },

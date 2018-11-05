@@ -17,16 +17,18 @@ class EarnedBoughtSoldChart(APIView):
         filter_data = request.GET.dict()
 
         # filter_data.pop('csrfmiddlewaretoken')
-        filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
-        filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        if request.GET.get('date') is None:
+            filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        else:
+            filter_data['date'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
 
         logging.warning(filter_data)
+
         bought_serializer = BuySerializer(data=filter_data)
         bought_serializer.is_valid()
-
         sold_serializer = SellSerializer(data=filter_data)
         sold_serializer.is_valid()
-
         earned_serializer = EarnSerializer(data=filter_data)
         earned_serializer.is_valid()
 
@@ -43,8 +45,11 @@ class BoughtSoldChart(APIView):
         filter_data = request.GET.dict()
 
         # filter_data.pop('csrfmiddlewaretoken')
-        filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
-        filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        if request.GET.get('date') is None:
+            filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        else:
+            filter_data['date'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
 
         logging.warning(filter_data)
         bought_serializer = BuySerializer(data=filter_data)
@@ -65,8 +70,11 @@ class BoughtChart(APIView):
         filter_data = request.GET.dict()
 
         # filter_data.pop('csrfmiddlewaretoken')
-        filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
-        filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        if request.GET.get('date') is None:
+            filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        else:
+            filter_data['date'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
 
         logging.warning(filter_data)
         serializer = BuySerializer(data=filter_data)
@@ -82,8 +90,11 @@ class SoldChart(APIView):
         filter_data = request.GET.dict()
 
         # filter_data.pop('csrfmiddlewaretoken')
-        filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
-        filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        if request.GET.get('date') is None:
+            filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
+        else:
+            filter_data['date'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
 
         logging.warning(filter_data)
         serializer = SellSerializer(data=filter_data)

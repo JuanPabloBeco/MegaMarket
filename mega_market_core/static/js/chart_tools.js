@@ -21,7 +21,6 @@ function chart_tools(chart_date_format, filters_to_apply) {
                 Earned_report =[{'date': '2000-01-01', 'data_sum': 0},]
                 $('#earnedtitlediv').append('<p class="empty_message" style="font-size: 14px">(empty)</p>')
             }
-
             if (Bought_report === undefined || Bought_report.length === 0){
                 Bought_report =[{'date': '2000-01-01', 'data_sum': 0},]
                 $('#boughttitlediv').append('<p class="empty_message">(empty)</p>')
@@ -30,7 +29,6 @@ function chart_tools(chart_date_format, filters_to_apply) {
                 Sold_report =[{'date': '2000-01-01', 'data_sum': 0},]
                 $('#soldtitlediv').append('<p class="empty_message">(empty)</p>')
             }
-
 
             make_chart(
                 Earned_report,
@@ -53,7 +51,6 @@ function chart_tools(chart_date_format, filters_to_apply) {
                 filters_to_apply.date__gt,
                 filters_to_apply.date__lt,
             )
-
         }
     });
 }

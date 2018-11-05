@@ -12,8 +12,10 @@ class BuySerializer(serializers.Serializer):
 
     def get_bought_report_chart(self, obj):
         filters = self.initial_data
-        bought_list = Buy.get_bought_list_by_date_filtered(**filters)
-
+        if filters.get('date') is not None:
+            bought_list = Buy.get_bought_one_day_list_filtered(**filters)
+        else:
+            bought_list = Buy.get_bought_list_by_date_filtered(**filters)
         for i in bought_list:
             i["data_sum"] = round(i.get("data_sum"), 2)
 
@@ -25,7 +27,10 @@ class SellSerializer(serializers.Serializer):
 
     def get_sold_report_chart(self, obj):
         filters = self.initial_data
-        sold_list = Sell.get_sold_list_by_date_filtered(**filters)
+        if filters.get('date') is not None:
+            sold_list = Sell.get_sold_one_day_list_filtered(**filters)
+        else:
+            sold_list = Sell.get_sold_list_by_date_filtered(**filters)
 
         for i in sold_list:
             i["data_sum"] = round(i.get("data_sum"), 2)
@@ -38,8 +43,13 @@ class EarnSerializer(serializers.Serializer):
 
     def get_earned_report_chart(self, obj):
         filters = self.initial_data
-        sold_list = Sell.get_sold_list_by_date_filtered(**filters)
-        bought_list = Buy.get_bought_list_by_date_filtered(**filters)
+
+        if filters.get('date') is not None:
+            bought_list = Buy.get_bought_one_day_list_filtered(**filters)
+            sold_list = Sell.get_sold_one_day_list_filtered(**filters)
+        else:
+            bought_list = Buy.get_bought_list_by_date_filtered(**filters)
+            sold_list = Sell.get_sold_list_by_date_filtered(**filters)
 
         until_date = self.initial_data.get("date__lt")
         from_date = self.initial_data.get("date__gt")

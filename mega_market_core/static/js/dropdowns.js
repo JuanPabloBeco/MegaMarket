@@ -162,7 +162,6 @@ function find_category_subcategory_or_item_parent(id, type) {
     return 'Nothing was found with this parameters'
 }
 
-
 function refresh_chart(chart_date_format) {
 
     console.log('Refreshing charts!')
@@ -180,13 +179,71 @@ function refresh_chart(chart_date_format) {
             }
         }
     }
+
     if ($('#geos')[0].value != -1) {
         filters_to_apply.geo_id = $('#geos')[0].value
     }
     if ($('#target_users')[0].value != -1) {
         filters_to_apply.target_user_id = $('#target_users')[0].value
     }
+
+    if ($('#date_options')[0].value == "Custom Range") {
+        let today_date = new Date()
+
+        filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
+        filters_to_apply.date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
+
+        $('#start_date')[0].value = filters_to_apply.date__lt
+        $('#end_date')[0].value = filters_to_apply.date__gt
+
+        // $('#date_range')[0].hidden = true
+    }
+    else {
+        // $('#date_range')[0].hidden = false
+        if ($('#date_options')[0].value == "Last Year") {
+            let today_date = new Date()
+            filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
+            filters_to_apply.date__gt = today_date.addYears(-1).toISOString().slice(0, 10)
+
+        }
+        else if ($('#date_options')[0].value == "Last Month") {
+            let today_date = new Date()
+            filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
+            filters_to_apply.date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
+        }
+        else if ($('#date_options')[0].value == "Yesterday") {
+            let today_date = new Date()
+            filters_to_apply.date = today_date.addDays(-1).toISOString().slice(0, 10)
+        }
+    }
+
+
     chart_tools(chart_date_format, filters_to_apply)
+}
+
+function draw_data_range_inputs() {
+    let today_date = new Date()
+
+    let date__lt = today_date.toISOString().slice(0, 10)
+    let date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
+
+    $('#filters').append(
+        '<div id="date_range">' +
+        '    <label>Choose trip dates</label>\n' +
+        '    <div>\n' +
+        '        <label for="start_date">Start</label>\n' +
+        '        <input type="date" id="start_date" name="trip"\n' +
+        '               value="' + date__gt + '"\n' +
+        '               min="0001-01-01" max="\' + today_date + \'" />\n' +
+        '    </div>\n' +
+        '    <div>\n' +
+        '        <label for="end_date">End</label>\n' +
+        '        <input type="date" id="end_date" name="trip"\n' +
+        '               value="' + date__lt + '"\n' +
+        '               min="0001-01-01" max="' + today_date + '"/ >\n' +
+        '    </div>\n' +
+        '</div>');
+    // $('#date_range')[0].hidden = true
 }
 
 

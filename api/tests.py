@@ -49,7 +49,7 @@ class BuySerializerTest(TestCase):
         )
         initial_transaction.save()
 
-        temp_date = datetime(2018, 10, 2, 0, 0, 0)
+        temp_date = datetime(2018, 10, 1, 1, 0, 0)
         initial_transaction = Buy(
             item=temp_item,
             amount=initial_amount,
@@ -82,6 +82,23 @@ class BuySerializerTest(TestCase):
 
         self.assertEqual(response.data, expected_response)
 
+    def test_buy_get_list_one_day(self):
+        data = {
+            "date": "2018-10-1",
+        }
+        data_json = json.dumps(data)
+
+        response = self.client.get(reverse('earnedboughtsold'), data=data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        expected_response = {
+            "bought_report_chart": [
+                {"date": "2018-10-01", "data_sum": 10},
+                {"date": "2018-10-02", "data_sum": 10},
+            ]
+        }
+
+        self.assertEqual(response.data, expected_response)
     def test_buy_get_list(self):
         data = {
             "date__lt": "2018-10-2",
