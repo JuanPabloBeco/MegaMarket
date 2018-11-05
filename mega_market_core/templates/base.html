@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     {% block meta_tags %}
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
     {% endblock %}
 
     <!-- Jquery -->
@@ -21,13 +21,13 @@
             crossorigin="anonymous"></script>
 
     {% block extra_head %}
-    {# This block exist to include stuff into the head without modify the base.html #}
+        {# This block exist to include stuff into the head without modify the base.html #}
     {% endblock extra_head %}
 </head>
 
 <body>
 {% block content %}
-{% endblock content%}
+{% endblock content %}
 </body>
 
 {% block javascript_footer %}

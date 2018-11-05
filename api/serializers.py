@@ -62,14 +62,14 @@ class EarnSerializer(serializers.Serializer):
             bought_this_date = date_bought_dict.get(day)
 
             if sold_this_date and bought_this_date:
-                earned_list.append({'data_sum': sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 'date': day})
+                earned_list.append(
+                    {'data_sum': round(sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 2), 'date': day})
             elif sold_this_date:
                 earned_list.append({'data_sum': sold_this_date.get('data_sum'), 'date': day})
             elif bought_this_date:
                 earned_list.append({'data_sum': - bought_this_date.get('data_sum'), 'date': day})
             # else:
             #     earned_list.append(0)
-
 
         return earned_list
 

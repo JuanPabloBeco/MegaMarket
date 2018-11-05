@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from rest_framework.utils import json
 
+from MegaMarket.celery import REFRESH_INTERVAL_MILLISECONDS
 from api.serializers import CategorySerializer, GeoSerializer, TargetUserSerializer
 from api.views import BoughtChart
 from mega_market_core.forms import TransactionForm
@@ -38,11 +39,11 @@ def dashboard(request):
         'categories_subcategories_items_filter_options': category_subcategory_item_filter_serializer_json,
         'geo_filter_options': geo_filter_serializer_json,
         'target_user_filter_options': target_user_filter_serializer_json,
+        'refresh_interval_milliseconds': REFRESH_INTERVAL_MILLISECONDS,
     })
 
 
 def ticket(request):
-
     if request.method == GET:
         form = TransactionForm()
         return render(request, 'dashboard.html', {

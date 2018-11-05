@@ -1,3 +1,4 @@
+import logging
 from random import randrange, getrandbits
 
 from django.db import models
@@ -31,8 +32,16 @@ class Item(models.Model):
         :return:
         """
         try:
-            last_unit_price = self.transactions.all().order_by('date').reverse()[0].unit_price
+            last_buy_unit_price = self.buy_transactions.all().order_by('-date').first()
+            last_sell_unit_price = self.sell_transactions.all().order_by('-date').first()
+            if last_sell_unit_price is None:
+                last_unit_price = last_buy_unit_price.unit_price
+            elif last_buy_unit_price.date > last_sell_unit_price.date:
+                last_unit_price = last_buy_unit_price.unit_price
+            else:
+                last_unit_price = last_sell_unit_price.unit_price
         except Exception as e:
+            logging.error(e)
             last_unit_price = -1
         return last_unit_price
 
@@ -70,7 +79,6 @@ class Buy(models.Model):
     geo = models.ForeignKey(Geo, related_name="buy_transactions", on_delete=models.PROTECT)
     item = models.ForeignKey(Item, related_name="buy_transactions", on_delete=models.PROTECT)
 
-
     # def save(self, *args, **kwargs):
     #     item = self.item
     #     item.stock += self.amount * self.type * -1  # the -1 is because the stock and the money transaction are opposites
@@ -87,7 +95,7 @@ class Buy(models.Model):
 
         for day in bought_list:
             day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
-            day['data_sum'] = round(day['data_sum'],2)
+            day['data_sum'] = round(day['data_sum'], 2)
         return bought_list
 
     def __str__(self):
@@ -101,7 +109,6 @@ class Sell(models.Model):
     target_user = models.ForeignKey(TargetUser, related_name="sell_transactions", on_delete=models.PROTECT)
     geo = models.ForeignKey(Geo, related_name="sell_transactions", on_delete=models.PROTECT)
     item = models.ForeignKey(Item, related_name="sell_transactions", on_delete=models.PROTECT)
-
 
     # def save(self, *args, **kwargs):
     #     item = self.item
@@ -119,7 +126,7 @@ class Sell(models.Model):
 
         for day in sold_list:
             day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
-            day['data_sum'] = round(day['data_sum'],2)
+            day['data_sum'] = round(day['data_sum'], 2)
         return sold_list
 
     def __str__(self):

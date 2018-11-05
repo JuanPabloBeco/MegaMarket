@@ -21,10 +21,11 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                    max_daily_transaction=MAX_DAILY_TRANSACTION):
     unit_prices = []
     temp_geo = Geo(country='Uruguay', city='Montevideo', id=1)
+    temp_geo.save()
     temp_geo = Geo(country='Argentina', city='Buenos Aires', id=2)
+    temp_geo.save()
     temp_geo = Geo(country='Brasil', city='Rio de Janeiro', id=3)
     temp_geo.save()
-
 
     for i in range(1, 6):
         temp_category = Category(name='Category%s' % i, id=i)
@@ -44,6 +45,7 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
             date=initial_date,
             target_user_id=i,
             geo=temp_geo,
+            id=i,
         )
         initial_transaction.save()
 
@@ -93,11 +95,10 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                 logging.error(e)
                 logging.error('item_id %s' % temp_transaction.item)
                 logging.error('item %s' % temp_transaction.item)
-                logging.error('type %s' % temp_transaction.type)
                 logging.error('amount %s' % temp_transaction.amount)
                 logging.error('unit_price %s' % temp_transaction.unit_price)
                 logging.error('date %s' % temp_transaction.date)
                 logging.error('target_user %s' % temp_transaction.target_user)
-                logging.error('geo_id %s' % temp_transaction.geo)
+                logging.error('geo_id %s' % temp_transaction.geo_id)
 
     return unit_prices

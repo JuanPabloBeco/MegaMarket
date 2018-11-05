@@ -9,11 +9,28 @@ function chart_tools(chart_date_format, filters_to_apply) {
         data: filters_to_apply,
         success: function (data) {
 
+            console.log(data)
+
+            var Earned_report = data.earned_report_chart
             var Bought_report = data.bought_report_chart
             var Sold_report = data.sold_report_chart
-            var Earned_report = data.earned_report_chart
 
-            console.log(data)
+            $(".empty_message").empty()
+
+            if (Earned_report === undefined || Earned_report.length === 0){
+                Earned_report =[{'date': '2000-01-01', 'data_sum': 0},]
+                $('#earnedtitlediv').append('<p class="empty_message" style="font-size: 14px">(empty)</p>')
+            }
+
+            if (Bought_report === undefined || Bought_report.length === 0){
+                Bought_report =[{'date': '2000-01-01', 'data_sum': 0},]
+                $('#boughttitlediv').append('<p class="empty_message">(empty)</p>')
+            }
+            if (Sold_report === undefined || Sold_report.length === 0){
+                Sold_report =[{'date': '2000-01-01', 'data_sum': 0},]
+                $('#soldtitlediv').append('<p class="empty_message">(empty)</p>')
+            }
+
 
             make_chart(
                 Earned_report,
@@ -66,7 +83,7 @@ function make_chart(chart_data, time_format, chart_div_id, start_date, end_date)
         "gridAboveGraphs":
             true,
         "startEffect": "easeOutSine",
-        "startDuration": 0.75,
+        "startDuration": 0.25,
         "responsive": {
             "enabled": true
         },

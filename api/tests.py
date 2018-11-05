@@ -115,4 +115,3 @@ class BuySerializerTest(TestCase):
             'id': 1
         }
         self.assertEqual(dict(serializer.data[0]), expected_response)
-

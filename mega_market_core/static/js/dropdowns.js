@@ -1,5 +1,3 @@
-
-
 function filling_filter_options(some_category_subcategory_item_filter_data, geo_filter_data, target_user_filter_data) {
     filling_category_subcategory_item_filter_options(some_category_subcategory_item_filter_data)
     filling_geo_filter_options(geo_filter_data)
@@ -164,12 +162,12 @@ function find_category_subcategory_or_item_parent(id, type) {
     return 'Nothing was found with this parameters'
 }
 
-// function change_sub_category() {
-//     category_id = $('#categories').value}
 
 function refresh_chart(chart_date_format) {
+
+    console.log('Refreshing charts!')
     let filters_to_apply = {
-        date__lt: '2000-3-29',
+        date__lt: '2000-6-29',
         date__gt: '2000-1-1',
     }
 
@@ -191,59 +189,60 @@ function refresh_chart(chart_date_format) {
     chart_tools(chart_date_format, filters_to_apply)
 }
 
+
 function category_subcategory_item_refresh_chart(event) {
 
-            if (event.currentTarget.id == 'categories') {
-                object_type = 'category'
-            }
-            else if (event.currentTarget.id == 'subcategories') {
-                object_type = 'subcategory'
-            }
-            else if (event.currentTarget.id == 'items') {
-                object_type = 'item'
-            }
-            else {
-                return ('unidentifyed type')
-            }
+    if (event.currentTarget.id == 'categories') {
+        object_type = 'category'
+    }
+    else if (event.currentTarget.id == 'subcategories') {
+        object_type = 'subcategory'
+    }
+    else if (event.currentTarget.id == 'items') {
+        object_type = 'item'
+    }
+    else {
+        return ('unidentifyed type')
+    }
 
-            let object_id = event.currentTarget.value
+    let object_id = event.currentTarget.value
 
-            $('#categories').empty();
-            $('#subcategories').empty();
-            $('#items').empty();
+    $('#categories').empty();
+    $('#subcategories').empty();
+    $('#items').empty();
 
-            if (object_id == -1) {
-                $('#categories').append('<option value="-1">All</option>');
-                $('#subcategories').append('<option value="-1">All</option>');
-                $('#items').append('<option value="-1">All</option>');
-                filling_category_subcategory_item_filter_options(categories_subcategories_items_filter_data)
-            }
-            else {
-                let selected_object_data = find_category_subcategory_or_item(object_id, object_type)
+    if (object_id == -1) {
+        $('#categories').append('<option value="-1">All</option>');
+        $('#subcategories').append('<option value="-1">All</option>');
+        $('#items').append('<option value="-1">All</option>');
+        filling_category_subcategory_item_filter_options(categories_subcategories_items_filter_data)
+    }
+    else {
+        let selected_object_data = find_category_subcategory_or_item(object_id, object_type)
 
-                if (object_type == 'category') {
-                    $('#categories').append('<option value="-1">All</option>');
-                    $('#subcategories').append('<option value="-1">All</option>');
-                    $('#items').append('<option value="-1">All</option>');
-                    filling_category_subcategory_item_filter_options([selected_object_data])
-                    $('#categories')[0].value = object_id
-                }
-                else if (object_type == 'subcategory') {
-                    $('#subcategories').append('<option value="-1">All</option>');
-                    $('#items').append('<option value="-1">All</option>');
-                    filling_category_subcategory_item_filter_options([selected_object_data])
-
-                    $('#subcategories')[0].value = object_id
-                }
-                else if (event.currentTarget.id == 'items') {
-                    $('#items').append('<option value="-1">All</option>');
-                    filling_category_subcategory_item_filter_options([selected_object_data])
-                    $('#items')[0].value = object_id
-                }
-                else {
-                    return ('unidentifyed type')
-                }
-            }
-
-            refresh_chart(chart_date_format)
+        if (object_type == 'category') {
+            $('#categories').append('<option value="-1">All</option>');
+            $('#subcategories').append('<option value="-1">All</option>');
+            $('#items').append('<option value="-1">All</option>');
+            filling_category_subcategory_item_filter_options([selected_object_data])
+            $('#categories')[0].value = object_id
         }
+        else if (object_type == 'subcategory') {
+            $('#subcategories').append('<option value="-1">All</option>');
+            $('#items').append('<option value="-1">All</option>');
+            filling_category_subcategory_item_filter_options([selected_object_data])
+
+            $('#subcategories')[0].value = object_id
+        }
+        else if (event.currentTarget.id == 'items') {
+            $('#items').append('<option value="-1">All</option>');
+            filling_category_subcategory_item_filter_options([selected_object_data])
+            $('#items')[0].value = object_id
+        }
+        else {
+            return ('unidentifyed type')
+        }
+    }
+
+    refresh_chart(chart_date_format)
+}

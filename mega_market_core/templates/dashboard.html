@@ -21,11 +21,13 @@
             height: 250px;
             font-size: 11px;
         }
+
         #boughtchartdiv {
             width: 60%;
             height: 250px;
             font-size: 11px;
         }
+
         #soldchartdiv {
             width: 60%;
             height: 250px;
@@ -37,7 +39,7 @@
 
 {% block content %}
 
-    <div >
+    <div>
 
         <form>
             <fieldset>
@@ -70,34 +72,34 @@
                 <button id="clear_all_filters">Clear all filters</button>
 
             </fieldset>
-
         </form>
 
     </div>
-    <h2>Earned</h2>
+    <h2 id="earnedtitlediv">Earned</h2>
     <div id="earnedchartdiv"></div>
-    <h2>Bought</h2>
+    <h2 id="boughttitlediv">Bought</h2>
     <div id="boughtchartdiv"></div>
-    <h2>Sold</h2>
+    <h2 id="soldtitlediv">Sold</h2>
     <div id="soldchartdiv"></div>
 
 {% endblock content %}
 
 {% block javascript_footer %}
     <script>
-        {#categories_subcategories_items_filter_data = ;#}
         var categories_subcategories_items_filter_data = JSON.parse('{{ categories_subcategories_items_filter_options | safe}}')
         var geo_filter_data = JSON.parse('{{ geo_filter_options | safe}}')
         var target_user_geo_filter_data = JSON.parse('{{ target_user_filter_options | safe}}')
 
         var chart_date_format = "{{chart_date_format}}"
 
+        var myVar = setInterval(refresh_chart(chart_date_format), 1);
         let initial_filters = {
-            date__lt: '2000-3-29',
+            date__lt: '2000-6-29',
             date__gt: '2000-1-1',
         }
-        $(document).ready(find_category_subcategory_or_item(1))
+        $(document).ready(find_category_subcategory_or_item(1));
 
+        {#setInterval(refresh_chart(chart_date_format), 1);#}
 
         $(document).ready(chart_tools("{{chart_date_format}}", initial_filters));
         $(document).ready(filling_filter_options(
@@ -106,6 +108,18 @@
             target_user_geo_filter_data,
             )
         );
+        var timerabc = setInterval(function () {
+                refresh_chart(chart_date_format)
+            },
+            {{refresh_interval_milliseconds}});
+
+
+        {#refresh_chart(chart_date_format), 5000);//{{refresh_interval_milliseconds}});#}
+        {#$(document).ready(function () {#}
+        {#    console.log('hola1');#}
+        {#    #}
+        {#    console.log('hola2');});#}
+
 
         $('#geos').change(function () {
             refresh_chart(chart_date_format)
@@ -124,6 +138,8 @@
             $('#geos').empty();
             $('#target_users').empty();
             refresh_chart(chart_date_format)
-        })
+        });
+
+
     </script>
 {% endblock javascript_footer %}

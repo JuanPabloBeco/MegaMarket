@@ -8,9 +8,20 @@ from celery import shared_task
 from mega_market_core.data_generator import INITIAL_AMOUNT, MAX_DAILY_TRANSACTION
 from mega_market_core.models import Item, TargetUser, Geo, Buy, Sell
 
-
 @shared_task
 def create_random_user_accounts():
+
+    random_days = randrange(0, 30)
+    day = datetime(2000, 1, 1, 0, 0, 0) + timedelta(days=random_days)
+
+    try:
+        day = Buy.objects.all().order_by('-date')[0].date + timedelta(1)
+    except IndexError:
+        try:
+            day = Sell.objects.all().order_by('-date')[0].date + timedelta(1)
+        except IndexError:
+            pass
+
     for i in range(0, MAX_DAILY_TRANSACTION):
         target_user_amount = TargetUser.objects.all().count()
         item_amount = Item.objects.all().count()
@@ -22,9 +33,6 @@ def create_random_user_accounts():
 
         transaction_amount = randrange(INITIAL_AMOUNT * 0.1, INITIAL_AMOUNT * 0.9)
         transaction_price = Item(id=temp_item_id).generate_next_price()
-
-        random_days = randrange(0, 30)
-        day = datetime(2000, 1, 1, 0, 0, 0) + timedelta(days=random_days)
 
         if randrange(0, 2):
             temp_transaction = Buy(
@@ -52,7 +60,6 @@ def create_random_user_accounts():
             logging.error(e)
             logging.error('item_id %s' % temp_transaction.item)
             logging.error('item %s' % temp_transaction.item)
-            logging.error('type %s' % temp_transaction.type)
             logging.error('amount %s' % temp_transaction.amount)
             logging.error('unit_price %s' % temp_transaction.unit_price)
             logging.error('date %s' % temp_transaction.date)
