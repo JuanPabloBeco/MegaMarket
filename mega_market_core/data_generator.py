@@ -8,9 +8,9 @@ from mega_market_core.models import Category, SubCategory, Item, Geo, TargetUser
 INITIAL_AMOUNT = 1000
 MAX_INITIAL_UNIT_PRICE = 100
 MAX_INITIAL_UNIT_PRICE_STEP = 1
-INITIAL_DATE = datetime(2018, 1, 1, 0, 0, 0)
+INITIAL_DATE = datetime(2018, 7, 1, 0, 0, 0)
 TRANSACTION_AMOUNT = 50
-DAY_RANGE = 300
+DAY_RANGE = 150
 MAX_DAILY_TRANSACTION = 10
 
 
@@ -59,9 +59,10 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
     geo_amount = Geo.objects.all().count()
 
     for counting_days in range(0, day_range):
-        day = initial_date + timedelta(counting_days)
-        logging.warning(day)
         for i in range(0, max_daily_transaction):
+            hours = randrange(0, 24)
+            minutes = randrange(0, 60)
+            day = initial_date + timedelta(days=counting_days, hours=hours, minutes=minutes)
 
             target_user_amount_id = randrange(0, target_user_amount) + 1
             temp_item_id = randrange(0, item_amount) + 1
@@ -101,5 +102,6 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                 logging.error('date %s' % temp_transaction.date)
                 logging.error('target_user %s' % temp_transaction.target_user)
                 logging.error('geo_id %s' % temp_transaction.geo_id)
+        logging.warning('%s', day)
 
     return unit_prices

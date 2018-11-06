@@ -102,7 +102,7 @@ class BuySerializerTest(TestCase):
     def test_buy_get_list(self):
         data = {
             "date__lt": "2018-10-2",
-            "date__gt": "2018-9-1",
+            "date__gt": "2018-9-19",
             "item_id": 1,
             "geo_id": 1,
             "target_user_id": 1,

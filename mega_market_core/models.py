@@ -10,6 +10,9 @@ relative_maximum_percent_range = 20  # Integers percentage numbers only
 CHART_DATE_FORMAT_FOR_DATETIME = "%Y-%m-%d"
 CHART_DATE_FORMAT_FOR_AMCHARTS = "YYYY-MM-DD"
 
+CHART_DATETIME_FORMAT_FOR_DATETIME = "%Y-%m-%d %H:%M:%S"
+CHART_DATETIME_FORMAT_FOR_AMCHARTS = "YYYY-MM-DD JJ:mm:ss"
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -87,14 +90,41 @@ class Buy(models.Model):
 
     def get_bought_list_by_date_filtered(**kargs):
         filters = kargs
-        bought_list = Buy.objects.filter(**filters).values('date').annotate(
+        bought_list = Buy.objects.filter(
+            **filters
+        ).annotate(
+            date_only=models.functions.Trunc('date', 'day')
+        ).values(
+            'date_only'
+        ).annotate(
             data_sum=ExpressionWrapper(
                 Sum(F('unit_price') * F('amount')), output_field=models.FloatField()
             )
-        ).order_by('date')
+        ).order_by('date_only')
 
         for day in bought_list:
-            day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['date'] = day['date_only'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['data_sum'] = round(day['data_sum'], 2)
+        return bought_list
+
+    def get_bought_one_day_list_by_date_filtered(**kargs):
+        filters = kargs
+        bought_list = Buy.objects.filter(
+            **filters
+        ).annotate(
+            date_only=models.functions.Trunc('date', 'hour')
+        ).values(
+            'date_only'
+        ).annotate(
+            data_sum=ExpressionWrapper(
+                Sum(F('unit_price') * F('amount')), output_field=models.FloatField()
+            )
+        ).order_by(
+            'date_only'
+        )
+
+        for day in bought_list:
+            day['date'] = day['date_only'].strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
             day['data_sum'] = round(day['data_sum'], 2)
         return bought_list
 
@@ -118,14 +148,39 @@ class Sell(models.Model):
 
     def get_sold_list_by_date_filtered(**kargs):
         filters = kargs
-        sold_list = Sell.objects.filter(**filters).values('date').annotate(
+        sold_list = Sell.objects.filter(
+            **filters
+        ).annotate(
+            date_only=models.functions.Trunc('date', 'day')
+        ).values('date_only').annotate(
             data_sum=ExpressionWrapper(
                 Sum(F('unit_price') * F('amount')), output_field=models.FloatField()
             )
-        ).order_by('date')
+        ).order_by('date_only')
 
         for day in sold_list:
-            day['date'] = day['date'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['date'] = day['date_only'].strftime(CHART_DATE_FORMAT_FOR_DATETIME)
+            day['data_sum'] = round(day['data_sum'], 2)
+        return sold_list
+
+    def get_sold_one_day_list_by_date_filtered(**kargs):
+        filters = kargs
+        sold_list = Sell.objects.filter(
+            **filters
+        ).annotate(
+            date_only=models.functions.Trunc('date', 'hour')
+        ).values(
+            'date_only'
+        ).annotate(
+            data_sum=ExpressionWrapper(
+                Sum(F('unit_price') * F('amount')), output_field=models.FloatField()
+            )
+        ).order_by(
+            'date_only'
+        )
+
+        for day in sold_list:
+            day['date'] = day['date_only'].strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
             day['data_sum'] = round(day['data_sum'], 2)
         return sold_list
 
