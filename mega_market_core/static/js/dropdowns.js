@@ -162,13 +162,10 @@ function find_category_subcategory_or_item_parent(id, type) {
     return 'Nothing was found with this parameters'
 }
 
-function refresh_chart(chart_date_format) {
+function  refresh_chart(chart_date_format) {
 
     console.log('Refreshing charts!')
-    let filters_to_apply = {
-        date__lt: '2000-6-29',
-        date__gt: '2000-1-1',
-    }
+    let filters_to_apply = {}
 
     if ($('#categories')[0].value != -1) {
         filters_to_apply.item__sub_category__category_id = $('#categories')[0].value
@@ -218,7 +215,7 @@ function refresh_chart(chart_date_format) {
     }
 
 
-    chart_tools(chart_date_format, filters_to_apply)
+    chart_tools(filters_to_apply)
 }
 
 function draw_data_range_inputs() {

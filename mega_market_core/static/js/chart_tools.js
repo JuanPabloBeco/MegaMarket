@@ -1,4 +1,4 @@
-function chart_tools(chart_date_format, filters_to_apply) {
+function chart_tools(filters_to_apply) {
     var current_date = new Date();
     var current_year = current_date.getFullYear();
     var current_month = current_date.getMonth();
@@ -32,21 +32,21 @@ function chart_tools(chart_date_format, filters_to_apply) {
 
             make_chart(
                 Earned_report,
-                chart_date_format,
+                data.chart_date_format,
                 "earnedchartdiv",
                 filters_to_apply.date__gt,
                 filters_to_apply.date__lt,
             )
             make_chart(
                 Bought_report,
-                chart_date_format,
+                data.chart_date_format,
                 "boughtchartdiv",
                 filters_to_apply.date__gt,
                 filters_to_apply.date__lt,
             )
             make_chart(
                 Sold_report,
-                chart_date_format,
+                data.chart_date_format,
                 "soldchartdiv",
                 filters_to_apply.date__gt,
                 filters_to_apply.date__lt,
@@ -112,6 +112,7 @@ function make_chart(chart_data, time_format, chart_div_id, start_date, end_date)
         "categoryAxis": {
             "parseDates": true,
             "dashLength": 1,
+            "minPeriod": "mm",
             "minorGridEnabled": true,
             "gridPosition": "start",
             "gridAlpha": 0,
