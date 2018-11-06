@@ -125,16 +125,20 @@ class EarnSerializerWithTime(serializers.Serializer):
         sold_ended = False
         earned_list = []
 
-        for i in range(0, bought_list.__len__() + sold_list.__len__() - 1):
+        for i in range(0, bought_list.__len__() + sold_list.__len__()):
             try:
-                bought = bought_list[bought_iterator]  # las listas estan ordenadas por fecha
+                # Its supposed that the Querysets are ordered by date
+                bought = bought_list[bought_iterator]
             except IndexError:
-                bought = bought_list[0]
+                # 9999 is used because the following code registers the smaller date first
+                bought = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
                 bought_ended = True
             try:
+                # Its supposed that the Querysets are ordered by date
                 sold = sold_list[sold_iterator]
             except IndexError:
-                sold = sold_list[0]
+                # 9999 is used because the following code registers the smaller date first
+                sold = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
                 sold_ended = True
 
             if bought_ended & sold_ended:

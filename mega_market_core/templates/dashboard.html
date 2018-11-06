@@ -115,6 +115,12 @@
             refresh_chart(chart_date_format)
         })
 
+        var timerabc = setInterval(function () {
+                refresh_chart(chart_date_format)
+            },
+            {{refresh_interval_milliseconds}}
+        );
+
         $('#geos').change(function () {
             refresh_chart(chart_date_format)
         });

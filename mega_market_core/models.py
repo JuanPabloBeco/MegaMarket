@@ -124,7 +124,7 @@ class Buy(models.Model):
         )
 
         for day in bought_list:
-            day['date'] = day['date_only'].strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
+            day['date'] = day.pop('date_only').strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
             day['data_sum'] = round(day['data_sum'], 2)
         return bought_list
 
@@ -180,7 +180,7 @@ class Sell(models.Model):
         )
 
         for day in sold_list:
-            day['date'] = day['date_only'].strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
+            day['date'] = day.pop('date_only').strftime(CHART_DATETIME_FORMAT_FOR_DATETIME)
             day['data_sum'] = round(day['data_sum'], 2)
         return sold_list
 
