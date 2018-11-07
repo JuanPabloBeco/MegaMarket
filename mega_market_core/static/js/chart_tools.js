@@ -15,7 +15,7 @@ function chart_tools(filters_to_apply) {
             var Bought_report = data.bought_report_chart
             var Sold_report = data.sold_report_chart
 
-            $(".empty_message").empty()
+            $('.empty_message').empty()
 
             if (Earned_report === undefined || Earned_report.length === 0){
                 Earned_report =[{'date': '2000-01-01', 'data_sum': 0},]
@@ -68,8 +68,6 @@ function make_chart(chart_data, time_format, chart_div_id, start_date, end_date)
             "offset": 0,
             "minimum": start_date,
             "maximum": end_date
-            // "minimum": 2,
-            // "maximum": 6
         }, {
             "id": "valueAxis",
             "gridColor": "#FFFFFF",

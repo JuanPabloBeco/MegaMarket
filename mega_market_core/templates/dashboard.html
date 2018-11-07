@@ -72,13 +72,16 @@
 
                 <label for="date_options">Date</label>
                 <select name="date_options" id="date_options">
-                    <option value="Last Year">Last Year</option>
-                    <option value="Last Month">Last Month</option>
-                    <option selected value="Yesterday">Yesterday</option>
-                    <option value="Custom Range">Custom Range</option>
+                    <option value="last_year">Last Year</option>
+                    <option value="last_month">Last Month</option>
+                    <option selected value="yesterday">Yesterday</option>
+                    <option value="custom_range">Custom Range</option>
                 </select>
 
+
                 <button id="clear_all_filters">Clear all filters</button>
+
+                <button id="custom_range_button">Custom date chart</button>
 
             </fieldset>
         </form>
@@ -119,29 +122,47 @@
                 refresh_chart(chart_date_format)
             },
             {{refresh_interval_milliseconds}}
-        );
 
-        $('#geos').change(function () {
-            refresh_chart(chart_date_format)
-        });
         $('#date_options').change(function () {
             refresh_chart(chart_date_format)
         });
+        $('#custom_range_button').click(function (event) {
+            event.preventDefault();
+            refresh_chart(chart_date_format)
+        });
+
         $('#target_users').change(function () {
+            refresh_chart(chart_date_format)
+        });
+        $('#geos').change(function () {
             refresh_chart(chart_date_format)
         });
         $('.category_system_selects').change(function (event) {
             category_subcategory_item_refresh_chart(event)
         });
-
-        $("clear_all_filters").click(function () {
+        $("#clear_all_filters").click(function () {
+            event.preventDefault();
             $('#categories').empty();
             $('#subcategories').empty();
             $('#items').empty();
             $('#geos').empty();
             $('#target_users').empty();
+            $('#date_options')[0].value='yesterday'
+
+            $('#categories').append('<option value="-1">All</option>');
+            $('#subcategories').append('<option value="-1">All</option>');
+            $('#items').append('<option value="-1">All</option>');
+            $('#geos').append('<option value="-1">All</option>');
+            $('#target_users').append('<option value="-1">All</option>');
+
+            filling_filter_options(
+                categories_subcategories_items_filter_data,
+                geo_filter_data,
+                target_user_geo_filter_data,
+            );
             refresh_chart(chart_date_format)
         });
+
 
 
     </script>

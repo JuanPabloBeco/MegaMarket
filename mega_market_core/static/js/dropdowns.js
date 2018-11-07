@@ -184,31 +184,39 @@ function  refresh_chart(chart_date_format) {
         filters_to_apply.target_user_id = $('#target_users')[0].value
     }
 
-    if ($('#date_options')[0].value == "Custom Range") {
+    if ($('#date_options')[0].value == "custom_range") {
         let today_date = new Date()
 
-        filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
-        filters_to_apply.date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
+        if($('#start_date')[0].value != "" &&  $('#end_date')[0].value!= ""){
+            filters_to_apply.date__gt = $('#start_date')[0].value
+            filters_to_apply.date__lt = $('#end_date')[0].value
+        }
+        else{
+            let today_date = new Date()
+            filters_to_apply.date__gt = today_date.toISOString().slice(0, 10)
+            filters_to_apply.date__lt = today_date.addYears(-1).toISOString().slice(0, 10)
 
-        $('#start_date')[0].value = filters_to_apply.date__lt
-        $('#end_date')[0].value = filters_to_apply.date__gt
+            $('#start_date')[0].value = filters_to_apply.date__gt
+            $('#end_date')[0].value = filters_to_apply.date__lt
 
-        // $('#date_range')[0].hidden = true
+        }
+
+        $('#date_range')[0].hidden = false
     }
     else {
-        // $('#date_range')[0].hidden = false
-        if ($('#date_options')[0].value == "Last Year") {
+        $('#date_range')[0].hidden = true
+        if ($('#date_options')[0].value == "last_year") {
             let today_date = new Date()
             filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
             filters_to_apply.date__gt = today_date.addYears(-1).toISOString().slice(0, 10)
 
         }
-        else if ($('#date_options')[0].value == "Last Month") {
+        else if ($('#date_options')[0].value == "last_month") {
             let today_date = new Date()
             filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
             filters_to_apply.date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
         }
-        else if ($('#date_options')[0].value == "Yesterday") {
+        else if ($('#date_options')[0].value == "yesterday") {
             let today_date = new Date()
             filters_to_apply.date = today_date.addDays(-1).toISOString().slice(0, 10)
         }
@@ -237,11 +245,14 @@ function draw_data_range_inputs() {
         '        <label for="end_date">End</label>\n' +
         '        <input type="date" id="end_date" name="trip"\n' +
         '               value="' + date__lt + '"\n' +
-        '               min="0001-01-01" max="' + today_date + '"/ >\n' +
+        '               min="0001-01-01" max="' + today_date + '" />\n' +
         '    </div>\n' +
         '</div>');
-    // $('#date_range')[0].hidden = true
+
+
+    $('#date_range')[0].hidden = true
 }
+
 
 
 function category_subcategory_item_refresh_chart(event) {

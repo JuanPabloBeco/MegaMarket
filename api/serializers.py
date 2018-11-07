@@ -146,17 +146,14 @@ class EarnSerializerWithTime(serializers.Serializer):
 
             if (bought.get('date') < sold.get('date')) | sold_ended:
                 earned_list.append({'data_sum': - bought.get('data_sum'), 'date': bought.get('date')})
-                print('b %s\n  %s, %s' % (bought_iterator, bought, sold))
+
                 bought_iterator += 1
             elif (bought.get('date') > sold.get('date')) | bought_ended:
                 earned_list.append({'data_sum': sold.get('data_sum'), 'date': sold.get('date')})
-                print('s %s\n %s, %s' % (sold_iterator, bought, sold))
                 sold_iterator += 1
             else:
                 earned_list.append(
                     {'data_sum': sold.get('data_sum') - bought.get('data_sum'), 'date': bought.get('date')})
-                print('b %s' % bought_iterator)
-                print('s %s\n %s, %s' % (sold_iterator, bought, sold))
                 bought_iterator += 1
                 sold_iterator += 1
 
