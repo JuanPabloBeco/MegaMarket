@@ -16,25 +16,7 @@
     <script type="text/javascript" src="{% static 'js/date_tools.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/chart_tools.js' %}"></script>
 
-    <style>
-        #earnedchartdiv {
-            width: 60%;
-            height: 250px;
-            font-size: 11px;
-        }
-
-        #boughtchartdiv {
-            width: 60%;
-            height: 250px;
-            font-size: 11px;
-        }
-
-        #soldchartdiv {
-            width: 60%;
-            height: 250px;
-            font-size: 11px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/filter.css' %}" type="text/css" media="all"/>
 
 {% endblock extra_head %}
 
@@ -87,11 +69,11 @@
         </form>
 
     </div>
-    <h2 id="earnedtitlediv">Earned</h2>
+    <div id="earnedtitlediv"><span class="chart_title h1">Earned</span></div>
     <div id="earnedchartdiv"></div>
-    <h2 id="boughttitlediv">Bought</h2>
+    <div id="boughttitlediv"><span class="chart_title h1">Bought</div>
     <div id="boughtchartdiv"></div>
-    <h2 id="soldtitlediv">Sold</h2>
+    <div id="soldtitlediv"><span class="chart_title h1">Sold</div>
     <div id="soldchartdiv"></div>
 
 {% endblock content %}

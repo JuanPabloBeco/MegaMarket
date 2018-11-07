@@ -15,19 +15,19 @@ function chart_tools(filters_to_apply) {
             var Bought_report = data.bought_report_chart
             var Sold_report = data.sold_report_chart
 
-            $('.empty_message').empty()
+            $('.empty_message').remove()
 
             if (Earned_report === undefined || Earned_report.length === 0){
                 Earned_report =[{'date': '2000-01-01', 'data_sum': 0},]
-                $('#earnedtitlediv').append('<p class="empty_message" style="font-size: 14px">(empty)</p>')
+                $('#earnedtitlediv').append('<span class="empty_message badge-pill badge-primary h6 ">empty</span>')
             }
             if (Bought_report === undefined || Bought_report.length === 0){
                 Bought_report =[{'date': '2000-01-01', 'data_sum': 0},]
-                $('#boughttitlediv').append('<p class="empty_message">(empty)</p>')
+                $('#boughttitlediv').append('<span class="empty_message badge-pill badge-primary h6">empty</span>')
             }
             if (Sold_report === undefined || Sold_report.length === 0){
                 Sold_report =[{'date': '2000-01-01', 'data_sum': 0},]
-                $('#soldtitlediv').append('<p class="empty_message">(empty)</p>')
+                $('#soldtitlediv').append('<span class="empty_message badge-pill badge-primary h6">empty</span>')
             }
 
             make_chart(
