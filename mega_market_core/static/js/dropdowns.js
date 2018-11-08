@@ -162,7 +162,8 @@ function find_category_subcategory_or_item_parent(id, type) {
     return 'Nothing was found with this parameters'
 }
 
-function  refresh_chart(chart_date_format) {
+
+function refresh_chart(chart_date_format) {
 
     console.log('Refreshing charts!')
     let filters_to_apply = {}
@@ -187,7 +188,10 @@ function  refresh_chart(chart_date_format) {
     if ($('#date_options')[0].value == "custom_range") {
         let today_date = new Date()
 
-        if($('#start_date')[0].value != "" &&  $('#end_date')[0].value!= ""){
+        if($('#start_date')[0].value ==  $('#end_date')[0].value){
+            filters_to_apply.date = $('#start_date')[0].value
+        }
+        else if($('#start_date')[0].value != "" &&  $('#end_date')[0].value!= ""){
             filters_to_apply.date__gt = $('#start_date')[0].value
             filters_to_apply.date__lt = $('#end_date')[0].value
         }
@@ -226,24 +230,24 @@ function  refresh_chart(chart_date_format) {
     chart_tools(filters_to_apply)
 }
 
+
 function draw_data_range_inputs() {
     let today_date = new Date()
 
     let date__lt = today_date.toISOString().slice(0, 10)
     let date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
 
-    $('#filters').append(
+    $('#date-range-inputs').append(
         '<div id="date_range">' +
-        '    <label>Choose trip dates</label>\n' +
         '    <div>\n' +
         '        <label for="start_date">Start</label>\n' +
-        '        <input type="date" id="start_date" name="trip"\n' +
+        '        <input type="date" id="start_date" name="trip" class="form-control input-sm"\n' +
         '               value="' + date__gt + '"\n' +
         '               min="0001-01-01" max="\' + today_date + \'" />\n' +
         '    </div>\n' +
         '    <div>\n' +
         '        <label for="end_date">End</label>\n' +
-        '        <input type="date" id="end_date" name="trip"\n' +
+        '        <input type="date" id="end_date" name="trip" class="form-control input-sm"\n' +
         '               value="' + date__lt + '"\n' +
         '               min="0001-01-01" max="' + today_date + '" />\n' +
         '    </div>\n' +
@@ -252,7 +256,6 @@ function draw_data_range_inputs() {
 
     $('#date_range')[0].hidden = true
 }
-
 
 
 function category_subcategory_item_refresh_chart(event) {

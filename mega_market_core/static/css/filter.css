@@ -9,20 +9,33 @@
     padding-right: 0.1em;
 }
 
+.filter-col{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+.container{
+    margin-top:30px;
+}
+
+.padding{
+    padding:12px;
+}
+
 #earnedchartdiv {
-    width: 60%;
+    width: 100%;
     height: 250px;
     font-size: 11px;
 }
 
 #boughtchartdiv {
-    width: 60%;
+    width: 100%;
     height: 250px;
     font-size: 11px;
 }
 
 #soldchartdiv {
-    width: 60%;
+    width: 100%;
     height: 250px;
     font-size: 11px;
 }

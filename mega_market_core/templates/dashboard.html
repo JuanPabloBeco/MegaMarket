@@ -22,60 +22,99 @@
 
 {% block content %}
 
-    <div>
+    <button type="button" class="btn btn-primary btn-sm btn-block" data-toggle="collapse"
+            data-target="#filter-panel">
+        <span class="glyphicon glyphicon-cog">Select your filters</span>
+    </button>
 
-        <form>
-            <fieldset id="filters">
-                <legend>Select your filters</legend>
-                <label for="geos">Location</label>
-                <select name="geos" id="geos">
-                    <option value="-1">All</option>
-                </select>
+    <div class="">
+        <div class="container-fluid">
+            <div id="filter-panel" class="collapse filter-panel">
+                <div class="panel panel-default">
+                    <div class="panel-body padding">
+                        <form class="form-inline" role="form">
 
-                <label for="items">Item</label>
-                <select name="items" class="category_system_selects" id="items">
-                    <option value="-1">All</option>
-                </select>
+                            <div class="row">
+                                <div class="col mb-4 form-group">
+                                    <label for="items" class="filter-col">Item</label>
+                                    <select name="items" class="category_system_selects form-control"
+                                            id="items">
+                                        <option value="-1">All</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-4 form-group">
+                                    <label for="subcategories" class="filter-col">Subcategories</label>
+                                    <select name="subcategories"
+                                            class="category_system_selects form-control"
+                                            id="subcategories">
+                                        <option value="-1">All</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-4 form-group">
+                                    <label for="categories" class="filter-col">Category</label>
+                                    <select name="categories" class="category_system_selects form-control"
+                                            id="categories">
+                                        <option value="-1">All</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                <label for="subcategories">Subcategories</label>
-                <select name="subcategories" class="category_system_selects" id="subcategories">
-                    <option value="-1">All</option>
-                </select>
+                            <div class="row">
+                                <div class="col mb-4 form-group">
+                                    <label for="geos" class="filter-col">Location</label>
+                                    <select name="geos" id="geos" class="form-control">
+                                        <option value="-1">All</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-4 form-group">
+                                    <label for="target_users" class="filter-col">Target User</label>
+                                    <select name="target_users" id="target_users" class="form-control">
+                                        <option value="-1">All</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                <label for="categories">Category</label>
-                <select name="categories" class="category_system_selects" id="categories">
-                    <option value="-1">All</option>
-                </select>
+                            <div class="row">
+                                <div class="col mb-4 form-group">
+                                    <label for="date_options" class="filter-col">Date</label>
+                                    <select name="date_options" id="date_options" class="form-control">
+                                        <option value="last_year">Last Year</option>
+                                        <option value="last_month">Last Month</option>
+                                        <option selected value="yesterday">Yesterday</option>
+                                        <option value="custom_range">Custom Range</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-4 form-group">
+                                    <div id="date-range-inputs"></div>
+                                </div>
+                            </div>
 
-                <label for="target_users">Target User</label>
-                <select name="target_users" id="target_users">
-                    <option value="-1">All</option>
-                </select>
-
-                <label for="date_options">Date</label>
-                <select name="date_options" id="date_options">
-                    <option value="last_year">Last Year</option>
-                    <option value="last_month">Last Month</option>
-                    <option selected value="yesterday">Yesterday</option>
-                    <option value="custom_range">Custom Range</option>
-                </select>
-
-
-                <button id="clear_all_filters">Clear all filters</button>
-
-                <button id="custom_range_button">Custom date chart</button>
-
-            </fieldset>
-        </form>
-
+                            <div class="row">
+                                <div class="col mb-4 form-group">
+                                    <button id="custom_range_button" class="btn btn-primary">Update chart
+                                    </button>
+                                </div>
+                                <div class="col mb-4 form-group">
+                                    <button id="clear_all_filters" class="btn btn-primary ">Clear all filters
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="earnedtitlediv"><span class="chart_title h1">Earned</span></div>
-    <div id="earnedchartdiv"></div>
-    <div id="boughttitlediv"><span class="chart_title h1">Bought</div>
-    <div id="boughtchartdiv"></div>
-    <div id="soldtitlediv"><span class="chart_title h1">Sold</div>
-    <div id="soldchartdiv"></div>
-
+    <div>
+        <div class="container">
+            <div id="earnedtitlediv"><span class="chart_title h1">Earned</span></div>
+            <div id="earnedchartdiv"></div>
+            <div id="boughttitlediv"><span class="chart_title h1">Bought</span></div>
+            <div id="boughtchartdiv"></div>
+            <div id="soldtitlediv"><span class="chart_title h1">Sold</span></div>
+            <div id="soldchartdiv"></div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block javascript_footer %}
@@ -100,10 +139,10 @@
             refresh_chart(chart_date_format)
         })
 
-        var timerabc = setInterval(function () {
-                refresh_chart(chart_date_format)
-            },
-            {{refresh_interval_milliseconds}}
+        {#var timerabc = setInterval(function () {#}
+        {#        refresh_chart(chart_date_format)#}
+        {#    },#}
+        {#    {{refresh_interval_milliseconds}});#}
 
         $('#date_options').change(function () {
             refresh_chart(chart_date_format)
@@ -129,7 +168,7 @@
             $('#items').empty();
             $('#geos').empty();
             $('#target_users').empty();
-            $('#date_options')[0].value='yesterday'
+            $('#date_options')[0].value = 'yesterday'
 
             $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
@@ -144,7 +183,6 @@
             );
             refresh_chart(chart_date_format)
         });
-
 
 
     </script>
