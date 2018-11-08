@@ -5,6 +5,82 @@ function filling_filter_options(some_category_subcategory_item_filter_data, geo_
 }
 
 
+function partial_filling_category_subcategory_item_filter_options(category_subcategory_item_object) {
+
+    if (category_subcategory_item_object.hasOwnProperty('subcategories')) {
+        let category_list = categories_subcategories_items_filter_data
+        for (let i = 0; i < category_list.length; i++) {
+            let category = category_list[i]
+            $('#categories').append('<option value=' + category.id + '>' + category.name + '</option>');
+        }
+        $('#categories').val(category_subcategory_item_object.id)
+
+        let subcategory_list = category_subcategory_item_object.subcategories
+        for (let i = 0; i < subcategory_list.length; i++) {
+            let subcategory = subcategory_list[i]
+            $('#subcategories').append('<option value=' + subcategory.id + '>' + subcategory.name + '</option>');
+            items_list = subcategory.items
+            for (let j = 0; j < items_list.length; j++) {
+                let item = items_list[j]
+                $('#items').append('<option value=' + item.id + '>' + item.name + '</option>');
+            }
+        }
+    }
+    else if (category_subcategory_item_object.hasOwnProperty('items')) {
+        let parent_category = find_category_subcategory_or_item_parent(category_subcategory_item_object.id, 'subcategory')
+        $('#categories').append('<option value=' + parent_category.id + '>' + parent_category.name + '</option>');
+        $('#categories').val(parent_category.id)
+
+
+        for (let i = 0; i < categories_subcategories_items_filter_data.length; i++) {
+            let category = categories_subcategories_items_filter_data[i]
+            let subcategory_list = category.subcategories
+
+            for (let i = 0; i < subcategory_list.length; i++) {
+                let subcategory = subcategory_list[i]
+                $('#subcategories').append('<option value=' + subcategory.id + '>' + subcategory.name + '</option>');
+            }
+            $('#subcategories').val(category_subcategory_item_object.id)
+
+        }
+
+        let items_list = category_subcategory_item_object.items
+        for (let j = 0; j < items_list.length; j++) {
+            let item = items_list[j]
+            $('#items').append('<option value=' + item.id + '>' + item.name + '</option>');
+        }
+
+    }
+    else {
+        let parent_subcategory = find_category_subcategory_or_item_parent(category_subcategory_item_object.id, 'item')
+        $('#subcategories').append('<option value=' + parent_subcategory.id + '>' + parent_subcategory.name + '</option>');
+        $('#subcategories').val(parent_subcategory.id)
+
+
+        let parent_category = find_category_subcategory_or_item_parent(parent_subcategory.id, 'subcategory')
+        $('#categories').append('<option value=' + parent_category.id + '>' + parent_category.name + '</option>');
+        $('#categories').val(parent_category.id)
+
+        for (let i = 0; i < categories_subcategories_items_filter_data.length; i++) {
+            let category = categories_subcategories_items_filter_data[i]
+            let subcategory_list = category.subcategories
+
+            for (let i = 0; i < subcategory_list.length; i++) {
+                let subcategory = subcategory_list[i]
+                let item_list = subcategory.items
+                for (let j = 0; j < item_list.length; j++) {
+                    let item = item_list[i]
+                    $('#items').append('<option value=' + item.id + '>' + item.name + '</option>');
+                }
+
+
+            }
+        }
+        $('#items').val(category_subcategory_item_object.id)
+    }
+}
+
+
 function filling_category_subcategory_item_filter_options(some_category_subcategory_item_filter_data) {
 
     for (let i = 0; i < some_category_subcategory_item_filter_data.length; i++) {
@@ -188,14 +264,14 @@ function refresh_chart(chart_date_format) {
     if ($('#date_options')[0].value == "custom_range") {
         let today_date = new Date()
 
-        if($('#start_date')[0].value ==  $('#end_date')[0].value){
+        if ($('#start_date')[0].value == $('#end_date')[0].value) {
             filters_to_apply.date = $('#start_date')[0].value
         }
-        else if($('#start_date')[0].value != "" &&  $('#end_date')[0].value!= ""){
+        else if ($('#start_date')[0].value != "" && $('#end_date')[0].value != "") {
             filters_to_apply.date__gt = $('#start_date')[0].value
             filters_to_apply.date__lt = $('#end_date')[0].value
         }
-        else{
+        else {
             let today_date = new Date()
             filters_to_apply.date__gt = today_date.toISOString().slice(0, 10)
             filters_to_apply.date__lt = today_date.addYears(-1).toISOString().slice(0, 10)
@@ -292,20 +368,21 @@ function category_subcategory_item_refresh_chart(event) {
             $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            filling_category_subcategory_item_filter_options([selected_object_data])
-            $('#categories')[0].value = object_id
+            partial_filling_category_subcategory_item_filter_options(selected_object_data)
         }
         else if (object_type == 'subcategory') {
+            $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            filling_category_subcategory_item_filter_options([selected_object_data])
+            partial_filling_category_subcategory_item_filter_options(selected_object_data)
 
             $('#subcategories')[0].value = object_id
         }
         else if (event.currentTarget.id == 'items') {
+            $('#categories').append('<option value="-1">All</option>');
+            $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            filling_category_subcategory_item_filter_options([selected_object_data])
-            $('#items')[0].value = object_id
+            partial_filling_category_subcategory_item_filter_options(selected_object_data)
         }
         else {
             return ('unidentifyed type')
