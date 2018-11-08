@@ -30,12 +30,8 @@ class EarnedBoughtSoldChart(APIView):
             earned_serializer = EarnSerializer(data=filter_data)
             earned_serializer.is_valid()
 
-            return JsonResponse({
-                "earned_report_chart": earned_serializer.data.get("earned_report_chart"),
-                "bought_report_chart": list(bought_serializer.data.get("bought_report_chart")),
-                "sold_report_chart": list(sold_serializer.data.get("sold_report_chart")),
-                "chart_date_format": CHART_DATE_FORMAT_FOR_AMCHARTS,
-            })
+            chart_date_format_message = CHART_DATE_FORMAT_FOR_AMCHARTS
+
         else:
             filter_data['date__gt'] = datetime.strptime(filter_data.get('date'), CHART_DATE_FORMAT_FOR_DATETIME)
             filter_data['date__gt'] = filter_data['date__gt'] - timedelta(seconds=1)
@@ -50,12 +46,14 @@ class EarnedBoughtSoldChart(APIView):
             earned_serializer = EarnSerializerWithTime(data=filter_data)
             earned_serializer.is_valid()
 
-            return JsonResponse({
-                "earned_report_chart": earned_serializer.data.get("earned_report_chart"),
-                "bought_report_chart": list(bought_serializer.data.get("bought_report_chart")),
-                "sold_report_chart": list(sold_serializer.data.get("sold_report_chart")),
-                "chart_date_format": CHART_DATETIME_FORMAT_FOR_AMCHARTS,
-            })
+            chart_date_format_message = CHART_DATETIME_FORMAT_FOR_AMCHARTS
+
+        return JsonResponse({
+            "earned_report_chart": earned_serializer.data.get("earned_report_chart"),
+            "bought_report_chart": list(bought_serializer.data.get("bought_report_chart")),
+            "sold_report_chart": list(sold_serializer.data.get("sold_report_chart")),
+            "chart_date_format": chart_date_format_message,
+        })
 
 
 class BoughtSoldChart(APIView):
@@ -66,21 +64,32 @@ class BoughtSoldChart(APIView):
         if request.GET.get('date') is None:
             filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
             filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            logging.warning(filter_data)
+            bought_serializer = BuySerializer(data=filter_data)
+            bought_serializer.is_valid()
+            sold_serializer = SellSerializer(data=filter_data)
+            sold_serializer.is_valid()
+
+            chart_date_format_message = CHART_DATE_FORMAT_FOR_AMCHARTS
+
         else:
-            filter_data['date__gt'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
-            filter_data['date__lt'] = filter_data['date__gt'] + datetime.timedelta(days=1)
+            filter_data['date__gt'] = datetime.strptime(filter_data.get('date'), CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = filter_data['date__gt'] - timedelta(seconds=1)
+            filter_data['date__lt'] = filter_data['date__gt'] + timedelta(days=1)
+            filter_data.pop('date')
+            logging.warning(filter_data)
 
-        logging.warning(filter_data)
-        bought_serializer = BuySerializer(data=filter_data)
-        bought_serializer.is_valid()
+            bought_serializer = BuySerializerWithTime(data=filter_data)
+            bought_serializer.is_valid()
+            sold_serializer = SellSerializerWithTime(data=filter_data)
+            sold_serializer.is_valid()
 
-        sold_serializer = SellSerializer(data=filter_data)
-        sold_serializer.is_valid()
+            chart_date_format_message = CHART_DATETIME_FORMAT_FOR_AMCHARTS
 
         return JsonResponse({
             "bought_report_chart": list(bought_serializer.data.get("bought_report_chart")),
             "sold_report_chart": list(sold_serializer.data.get("sold_report_chart")),
-            "chart_date_format": CHART_DATETIME_FORMAT_FOR_AMCHARTS,
+            "chart_date_format": chart_date_format_message,
         })
 
 
@@ -92,19 +101,29 @@ class BoughtChart(APIView):
         if request.GET.get('date') is None:
             filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
             filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            logging.warning(filter_data)
+            bought_serializer = BuySerializer(data=filter_data)
+            bought_serializer.is_valid()
+
+            chart_date_format_message = CHART_DATE_FORMAT_FOR_AMCHARTS
+
         else:
-            filter_data['date__gt'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
-            filter_data['date__lt'] = filter_data['date__gt'] + datetime.timedelta(days=1)
+            filter_data['date__gt'] = datetime.strptime(filter_data.get('date'), CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = filter_data['date__gt'] - timedelta(seconds=1)
+            filter_data['date__lt'] = filter_data['date__gt'] + timedelta(days=1)
+            filter_data.pop('date')
+            logging.warning(filter_data)
 
-        logging.warning(filter_data)
+            bought_serializer = BuySerializerWithTime(data=filter_data)
+            bought_serializer.is_valid()
 
-        bought_serializer = BuySerializer(data=filter_data)
-        bought_serializer.is_valid()
+            chart_date_format_message = CHART_DATETIME_FORMAT_FOR_AMCHARTS
 
         return JsonResponse({
             "bought_report_chart": list(bought_serializer.data.get("bought_report_chart")),
-            "chart_date_format": CHART_DATETIME_FORMAT_FOR_AMCHARTS,
+            "chart_date_format": chart_date_format_message,
         })
+
 
 class SoldChart(APIView):
 
@@ -114,16 +133,25 @@ class SoldChart(APIView):
         if request.GET.get('date') is None:
             filter_data['date__gt'] = datetime.strptime(request.GET['date__gt'], CHART_DATE_FORMAT_FOR_DATETIME)
             filter_data['date__lt'] = datetime.strptime(request.GET['date__lt'], CHART_DATE_FORMAT_FOR_DATETIME)
+            logging.warning(filter_data)
+            sold_serializer = SellSerializer(data=filter_data)
+            sold_serializer.is_valid()
+
+            chart_date_format_message = CHART_DATE_FORMAT_FOR_AMCHARTS
+
         else:
-            filter_data['date__gt'] = datetime.strptime(request.GET['date'], CHART_DATE_FORMAT_FOR_DATETIME)
-            filter_data['date__lt'] = filter_data['date__gt'] + datetime.timedelta(days=1)
+            filter_data['date__gt'] = datetime.strptime(filter_data.get('date'), CHART_DATE_FORMAT_FOR_DATETIME)
+            filter_data['date__gt'] = filter_data['date__gt'] - timedelta(seconds=1)
+            filter_data['date__lt'] = filter_data['date__gt'] + timedelta(days=1)
+            filter_data.pop('date')
+            logging.warning(filter_data)
 
-        logging.warning(filter_data)
+            sold_serializer = SellSerializerWithTime(data=filter_data)
+            sold_serializer.is_valid()
 
-        sold_serializer = SellSerializer(data=filter_data)
-        sold_serializer.is_valid()
+            chart_date_format_message = CHART_DATETIME_FORMAT_FOR_AMCHARTS
 
         return JsonResponse({
             "sold_report_chart": list(sold_serializer.data.get("sold_report_chart")),
-            "chart_date_format": CHART_DATETIME_FORMAT_FOR_AMCHARTS,
+            "chart_date_format": chart_date_format_message,
         })
