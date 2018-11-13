@@ -12,7 +12,8 @@
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
 
     {% load static %}
-    <script type="text/javascript" src="{% static 'js/dropdowns.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/model_tools.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/dropdown_tools.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/date_tools.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/chart_tools.js' %}"></script>
 
@@ -139,10 +140,10 @@
             refresh_chart(chart_date_format)
         })
 
-        {#var timerabc = setInterval(function () {#}
-        {#        refresh_chart(chart_date_format)#}
-        {#    },#}
-        {#    {{refresh_interval_milliseconds}});#}
+        var timerabc = setInterval(function () {
+                refresh_chart(chart_date_format)
+            },
+            {{refresh_interval_milliseconds}});
 
         $('#date_options').change(function () {
             refresh_chart(chart_date_format)

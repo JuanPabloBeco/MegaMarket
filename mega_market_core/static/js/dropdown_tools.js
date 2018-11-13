@@ -5,7 +5,7 @@ function filling_filter_options(some_category_subcategory_item_filter_data, geo_
 }
 
 
-function partial_filling_category_subcategory_item_filter_options(category_subcategory_item_object) {
+function filling_partially_category_subcategory_item_filter_options(category_subcategory_item_object) {
 
     if (category_subcategory_item_object.hasOwnProperty('subcategories')) {
         let category_list = categories_subcategories_items_filter_data
@@ -31,7 +31,6 @@ function partial_filling_category_subcategory_item_filter_options(category_subca
         $('#categories').append('<option value=' + parent_category.id + '>' + parent_category.name + '</option>');
         $('#categories').val(parent_category.id)
 
-
         for (let i = 0; i < categories_subcategories_items_filter_data.length; i++) {
             let category = categories_subcategories_items_filter_data[i]
             let subcategory_list = category.subcategories
@@ -41,7 +40,6 @@ function partial_filling_category_subcategory_item_filter_options(category_subca
                 $('#subcategories').append('<option value=' + subcategory.id + '>' + subcategory.name + '</option>');
             }
             $('#subcategories').val(category_subcategory_item_object.id)
-
         }
 
         let items_list = category_subcategory_item_object.items
@@ -49,7 +47,6 @@ function partial_filling_category_subcategory_item_filter_options(category_subca
             let item = items_list[j]
             $('#items').append('<option value=' + item.id + '>' + item.name + '</option>');
         }
-
     }
     else {
         let parent_subcategory = find_category_subcategory_or_item_parent(category_subcategory_item_object.id, 'item')
@@ -65,15 +62,13 @@ function partial_filling_category_subcategory_item_filter_options(category_subca
             let category = categories_subcategories_items_filter_data[i]
             let subcategory_list = category.subcategories
 
-            for (let i = 0; i < subcategory_list.length; i++) {
-                let subcategory = subcategory_list[i]
+            for (let j = 0; j < subcategory_list.length; j++) {
+                let subcategory = subcategory_list[j]
                 let item_list = subcategory.items
-                for (let j = 0; j < item_list.length; j++) {
-                    let item = item_list[i]
+                for (let k = 0; k < item_list.length; k++) {
+                    let item = item_list[k]
                     $('#items').append('<option value=' + item.id + '>' + item.name + '</option>');
                 }
-
-
             }
         }
         $('#items').val(category_subcategory_item_object.id)
@@ -157,88 +152,6 @@ function filling_target_user_filter_options(target_user_filter_data) {
 }
 
 
-function find_category_subcategory_or_item(id, type) {
-
-    let all_categories = categories_subcategories_items_filter_data
-
-    for (let i = 0; i < all_categories.length; i++) {
-        if (type == 'category') {
-            if (all_categories[i].id == id) {
-                let to_return = all_categories[i]
-                return to_return
-            }
-        }
-        else {
-            let subcategories = all_categories[i].subcategories
-
-            for (let j = 0; j < subcategories.length; j++) {
-                if (type == 'subcategory') {
-                    if (subcategories[j].id == id) {
-
-                        let to_return = subcategories[j]
-                        to_return.category_id = all_categories[i].id
-                        return to_return
-                    }
-                }
-                else {
-                    let items = subcategories[j].items
-
-                    for (let k = 0; k < items.length; k++) {
-                        if (items[k].id == id) {
-                            let to_return = items[k]
-                            to_return.subcategory_id = subcategories[j].id
-                            to_return.category_id = all_categories[i].id
-                            return to_return
-                            return items[k]
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return 'Nothing was found with this parameters'
-}
-
-
-function find_category_subcategory_or_item_parent(id, type) {
-
-    let all_categories = categories_subcategories_items_filter_data
-
-    for (let i = 0; i < all_categories.length; i++) {
-        if (type == 'category') {
-            if (all_categories[i].id == id) {
-                let to_return = all_categories[i]
-                return 'i`m a campaign'
-            }
-        }
-        else {
-            let subcategories = all_categories[i].subcategories
-
-            for (let j = 0; j < subcategories.length; j++) {
-                if (type == 'subcategory') {
-                    if (subcategories[j].id == id) {
-                        let to_return = all_categories[i]
-                        return to_return
-                    }
-                }
-                else {
-                    let items = subcategories[j].items
-
-                    for (let k = 0; k < items.length; k++) {
-                        if (items[k].id == id) {
-                            let to_return = subcategories[j]
-                            to_return.category_id = all_categories[i].id
-                            return to_return
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return 'Nothing was found with this parameters'
-}
-
-
 function refresh_chart(chart_date_format) {
 
     console.log('Refreshing charts!')
@@ -278,7 +191,6 @@ function refresh_chart(chart_date_format) {
 
             $('#start_date')[0].value = filters_to_apply.date__gt
             $('#end_date')[0].value = filters_to_apply.date__lt
-
         }
 
         $('#date_range')[0].hidden = false
@@ -289,7 +201,6 @@ function refresh_chart(chart_date_format) {
             let today_date = new Date()
             filters_to_apply.date__lt = today_date.toISOString().slice(0, 10)
             filters_to_apply.date__gt = today_date.addYears(-1).toISOString().slice(0, 10)
-
         }
         else if ($('#date_options')[0].value == "last_month") {
             let today_date = new Date()
@@ -304,33 +215,6 @@ function refresh_chart(chart_date_format) {
 
 
     chart_tools(filters_to_apply)
-}
-
-
-function draw_data_range_inputs() {
-    let today_date = new Date()
-
-    let date__lt = today_date.toISOString().slice(0, 10)
-    let date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
-
-    $('#date-range-inputs').append(
-        '<div id="date_range">' +
-        '    <div>\n' +
-        '        <label for="start_date">Start</label>\n' +
-        '        <input type="date" id="start_date" name="trip" class="form-control input-sm"\n' +
-        '               value="' + date__gt + '"\n' +
-        '               min="0001-01-01" max="\' + today_date + \'" />\n' +
-        '    </div>\n' +
-        '    <div>\n' +
-        '        <label for="end_date">End</label>\n' +
-        '        <input type="date" id="end_date" name="trip" class="form-control input-sm"\n' +
-        '               value="' + date__lt + '"\n' +
-        '               min="0001-01-01" max="' + today_date + '" />\n' +
-        '    </div>\n' +
-        '</div>');
-
-
-    $('#date_range')[0].hidden = true
 }
 
 
@@ -368,13 +252,13 @@ function category_subcategory_item_refresh_chart(event) {
             $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            partial_filling_category_subcategory_item_filter_options(selected_object_data)
+            filling_partially_category_subcategory_item_filter_options(selected_object_data)
         }
         else if (object_type == 'subcategory') {
             $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            partial_filling_category_subcategory_item_filter_options(selected_object_data)
+            filling_partially_category_subcategory_item_filter_options(selected_object_data)
 
             $('#subcategories')[0].value = object_id
         }
@@ -382,7 +266,7 @@ function category_subcategory_item_refresh_chart(event) {
             $('#categories').append('<option value="-1">All</option>');
             $('#subcategories').append('<option value="-1">All</option>');
             $('#items').append('<option value="-1">All</option>');
-            partial_filling_category_subcategory_item_filter_options(selected_object_data)
+            filling_partially_category_subcategory_item_filter_options(selected_object_data)
         }
         else {
             return ('unidentifyed type')
@@ -390,4 +274,31 @@ function category_subcategory_item_refresh_chart(event) {
     }
 
     refresh_chart(chart_date_format)
+}
+
+
+function draw_data_range_inputs() {
+    let today_date = new Date()
+
+    let date__lt = today_date.toISOString().slice(0, 10)
+    let date__gt = today_date.addMonths(-1).toISOString().slice(0, 10)
+
+    $('#date-range-inputs').append(
+        '<div id="date_range">' +
+        '    <div>\n' +
+        '        <label for="start_date">Start</label>\n' +
+        '        <input type="date" id="start_date" name="trip" class="form-control input-sm"\n' +
+        '               value="' + date__gt + '"\n' +
+        '               min="0001-01-01" max="\' + today_date + \'" />\n' +
+        '    </div>\n' +
+        '    <div>\n' +
+        '        <label for="end_date">End</label>\n' +
+        '        <input type="date" id="end_date" name="trip" class="form-control input-sm"\n' +
+        '               value="' + date__lt + '"\n' +
+        '               min="0001-01-01" max="' + today_date + '" />\n' +
+        '    </div>\n' +
+        '</div>');
+
+
+    $('#date_range')[0].hidden = true
 }
