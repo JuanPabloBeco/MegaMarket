@@ -167,3 +167,24 @@ LOGGING = {
         },
     },
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "mega_market"
+    }
+}
+
+# Cache time to live is 30 minutes.
+CACHE_TTL = 60 * 30
+
+CATEGORY_INDICATOR = 'C'
+SUB_CATEGORY_INDICATOR = 'S'
+ITEM_INDICATOR = 'I'
+ALL_INDICATOR = 'X'
+
+

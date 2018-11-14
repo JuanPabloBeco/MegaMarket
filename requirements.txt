@@ -1,3 +1,5 @@
 Django==2.1.2
 celery==4.2.1
 djangorestframework
+django-redis ==	4.9.0
+redis == 2.10.6

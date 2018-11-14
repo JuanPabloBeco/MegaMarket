@@ -1,8 +1,11 @@
+from django.conf import settings
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 from rest_framework.utils import json
 
-from MegaMarket.celery import REFRESH_INTERVAL_MILLISECONDS
+from MegaMarket.celery import REFRESH_INTERVAL_SECONDS
 from api.serializers import CategorySerializer, GeoSerializer, TargetUserSerializer
 from api.views import BoughtChart
 from mega_market_core.forms import TransactionForm
@@ -11,7 +14,10 @@ from mega_market_core.models import CHART_DATE_FORMAT_FOR_AMCHARTS, Category, Ge
 GET = 'GET'
 POST = 'POST'
 
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
+
+@cache_page(CACHE_TTL)
 def dashboard(request):
     """
     View used for the dashboard page with the ticket to add more transactions
@@ -39,7 +45,7 @@ def dashboard(request):
         'categories_subcategories_items_filter_options': category_subcategory_item_filter_serializer_json,
         'geo_filter_options': geo_filter_serializer_json,
         'target_user_filter_options': target_user_filter_serializer_json,
-        'refresh_interval_milliseconds': REFRESH_INTERVAL_MILLISECONDS,
+        'refresh_interval_milliseconds': REFRESH_INTERVAL_SECONDS * 1000,
     })
 
 

@@ -1,8 +1,9 @@
 import os
 from celery import Celery
 
-REFRESH_INTERVAL_MILLISECONDS = 15000
-NEW_DATA_INTERVAL_SECONDS = 30.0
+REFRESH_INTERVAL_SECONDS = 30
+NEW_DATA_INTERVAL_SECONDS = 5
+DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS = 60 #* 60 * 24 # One day between each yesterday save
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MegaMarket.settings')
 
@@ -15,5 +16,11 @@ app.conf.beat_schedule = {
         'task': 'mega_market_core.tasks.create_random_user_accounts',
         'schedule': NEW_DATA_INTERVAL_SECONDS,
     },
+    'cache-opening-charts': {
+        'task': 'api.tasks.cache_opening_charts',
+        'schedule': DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS,
+    },
 }
 app.conf.timezone = 'UTC'
+
+

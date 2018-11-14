@@ -2,6 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from datetime import datetime, timedelta
 
+from MegaMarket.celery import DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS
+from api.cache_tools import set_one_day_data_to_cache
 from mega_market_core.models import Buy, Category, SubCategory, Item, Geo, TargetUser, Sell, \
     CHART_DATE_FORMAT_FOR_DATETIME
 
@@ -43,13 +45,13 @@ class EarnSerializer(serializers.Serializer):
     earned_report_chart = serializers.SerializerMethodField()
 
     def get_earned_report_chart(self, obj):
-        filters = self.initial_data
+        send_to_cache = self.initial_data['send_to_cache']
 
-        bought_list = Buy.get_bought_list_by_date_filtered(**filters)
-        sold_list = Sell.get_sold_list_by_date_filtered(**filters)
+        bought_list = self.initial_data.get('bought_data')
+        sold_list = self.initial_data.get('sold_data')
 
-        until_date = self.initial_data.get("date__lt")
-        from_date = self.initial_data.get("date__gt")
+        until_date = self.initial_data.get("filter_data").get("date__lt")
+        from_date = self.initial_data.get("filter_data").get("date__gt")
 
         earned_list = []
 
@@ -65,19 +67,33 @@ class EarnSerializer(serializers.Serializer):
         # Daily earned
         for i in range(0, dayrange):
             day = from_date + timedelta(days=i)
-            day = datetime.strftime(day, CHART_DATE_FORMAT_FOR_DATETIME)
+            day = day.strftime(CHART_DATE_FORMAT_FOR_DATETIME)
             sold_this_date = date_sold_dict.get(day)
             bought_this_date = date_bought_dict.get(day)
 
-            if sold_this_date and bought_this_date:
-                earned_list.append(
-                    {'data_sum': round(sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 2), 'date': day})
-            elif sold_this_date:
-                earned_list.append({'data_sum': sold_this_date.get('data_sum'), 'date': day})
-            elif bought_this_date:
-                earned_list.append({'data_sum': - bought_this_date.get('data_sum'), 'date': day})
+            if (sold_this_date is not None) & (
+                    bought_this_date is not None):  # This must stay only until values are assign to the emtpy earned dates
+                if sold_this_date and bought_this_date:
+                    earned_this_date = {
+                        'data_sum': round(sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 2),
+                        'date': day}
+                elif sold_this_date:
+                    earned_this_date = {'data_sum': sold_this_date.get('data_sum'), 'date': day}
+                elif bought_this_date:
+                    earned_this_date = {'data_sum': - bought_this_date.get('data_sum'), 'date': day}
+
+                earned_list.append(earned_this_date)
+                if send_to_cache:
+                    set_one_day_data_to_cache(
+                        earned_this_date,
+                        bought_this_date,
+                        sold_this_date,
+                        self.initial_data.get("filter_data"),
+                        day,
+                        DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS,
+                    )
             # else:
-            #     earned_list.append(0)
+            #     earned_this_date = {'data_sum': 0, 'date': day}
 
         return earned_list
 
@@ -113,12 +129,11 @@ class EarnSerializerWithTime(serializers.Serializer):
     earned_report_chart = serializers.SerializerMethodField()
 
     def get_earned_report_chart(self, obj):
-        filters = self.initial_data
+        send_to_cache = self.initial_data['send_to_cache']
 
-        bought_list = Buy.get_bought_one_day_list_by_date_filtered(**filters)
-        sold_list = Sell.get_sold_one_day_list_by_date_filtered(**filters)
+        bought_list = self.initial_data.get('bought_data')
+        sold_list = self.initial_data.get('sold_data')
 
-        # Cummulative earning
         bought_iterator = 0
         bought_ended = False
         sold_iterator = 0
@@ -128,35 +143,49 @@ class EarnSerializerWithTime(serializers.Serializer):
         for i in range(0, bought_list.__len__() + sold_list.__len__()):
             try:
                 # Its supposed that the Querysets are ordered by date
-                bought = bought_list[bought_iterator]
+                bought_this_date = bought_list[bought_iterator]
             except IndexError:
                 # 9999 is used because the following code registers the smaller date first
-                bought = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
+                bought_this_date = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
                 bought_ended = True
+
             try:
                 # Its supposed that the Querysets are ordered by date
-                sold = sold_list[sold_iterator]
+                sold_this_date = sold_list[sold_iterator]
             except IndexError:
                 # 9999 is used because the following code registers the smaller date first
-                sold = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
+                sold_this_date = {'data_sum': 0, 'date': '9999-01-01 00:00:00'}
                 sold_ended = True
 
             if bought_ended & sold_ended:
                 break
 
-            if (bought.get('date') < sold.get('date')) | sold_ended:
-                earned_list.append({'data_sum': - bought.get('data_sum'), 'date': bought.get('date')})
+            if (bought_this_date.get('date') < sold_this_date.get('date')) | sold_ended:
+                earned_this_date = {'data_sum': - bought_this_date.get('data_sum'),
+                                    'date': bought_this_date.get('date')}
 
                 bought_iterator += 1
-            elif (bought.get('date') > sold.get('date')) | bought_ended:
-                earned_list.append({'data_sum': sold.get('data_sum'), 'date': sold.get('date')})
+
+            elif (bought_this_date.get('date') > sold_this_date.get('date')) | bought_ended:
+                earned_this_date = {'data_sum': sold_this_date.get('data_sum'), 'date': sold_this_date.get('date')}
                 sold_iterator += 1
+
             else:
-                earned_list.append(
-                    {'data_sum': sold.get('data_sum') - bought.get('data_sum'), 'date': bought.get('date')})
+                # Day to day earning
+                earned_this_date = {
+                    'data_sum': round(sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 2),
+                    'date': bought_this_date.get('date')}
                 bought_iterator += 1
                 sold_iterator += 1
-
+            earned_list.append(earned_this_date)
+            if send_to_cache:
+                set_one_day_data_to_cache(
+                    earned_this_date,
+                    bought_this_date,
+                    sold_this_date,
+                    self.initial_data.get("filter_data"),
+                    earned_this_date.get('date')
+                )
         return earned_list
 
 

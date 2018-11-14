@@ -1,17 +1,19 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from random import randrange
 
 import logging
 
 from celery import shared_task
+from django.core.cache import cache
 
+from api.cache_tools import generate_cache_key
 from mega_market_core.data_generator import INITIAL_AMOUNT, MAX_DAILY_TRANSACTION
-from mega_market_core.models import Item, TargetUser, Geo, Buy, Sell
+from mega_market_core.models import Item, TargetUser, Geo, Buy, Sell, CHART_DATE_FORMAT_FOR_DATETIME
 
 
 @shared_task
 def create_random_user_accounts():
-    random_transaction_number = randrange(0, MAX_DAILY_TRANSACTION)
+    random_transaction_number = randrange(1, MAX_DAILY_TRANSACTION)
 
     try:
         day = Buy.objects.all().order_by('-date')[0].date + timedelta(1)
@@ -21,9 +23,13 @@ def create_random_user_accounts():
         except IndexError:
             pass
 
-    for i in range(1, random_transaction_number):
-
-        day = day + timedelta(hours=randrange(0, 24), minutes=randrange(0, 60), seconds=randrange(0, 60))
+    for i in range(1, random_transaction_number + 1):
+        temp_hours = randrange(0, 23)
+        temp_minutes = randrange(0, 59)
+        temp_seconds = randrange(0, 59)
+        logging.warning(temp_hours)
+        logging.warning(day)
+        temp_date = day + timedelta(hours=temp_hours, minutes=temp_minutes, seconds=temp_seconds)
 
         target_user_amount = TargetUser.objects.all().count()
         item_amount = Item.objects.all().count()
@@ -41,7 +47,7 @@ def create_random_user_accounts():
                 item_id=temp_item_id,
                 amount=transaction_amount,
                 unit_price=transaction_price,
-                date=day,
+                date=temp_date,
                 target_user_id=target_user_amount_id,
                 geo_id=temp_geo_id,
             )
@@ -50,12 +56,22 @@ def create_random_user_accounts():
                 item_id=temp_item_id,
                 amount=transaction_amount,
                 unit_price=transaction_price,
-                date=day,
+                date=temp_date,
                 target_user_id=target_user_amount_id,
                 geo_id=temp_geo_id,
             )
 
-        logging.info(temp_transaction)
+        filter_data = {
+            "date": temp_date,
+            "item___id": temp_item_id,
+            "geo_id": temp_geo_id,
+            "target_user_id": target_user_amount_id,
+        }
+        cache_key = generate_cache_key(filter_data,temp_date)
+        cache.delete(cache_key)
+
+        logging.warning(temp_transaction)
+
         try:
             temp_transaction.save()
         except Exception as e:
