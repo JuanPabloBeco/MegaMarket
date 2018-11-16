@@ -5,6 +5,8 @@ REFRESH_INTERVAL_SECONDS = 30
 NEW_DATA_INTERVAL_SECONDS = 5
 DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS = 60 #* 60 * 24 # One day between each yesterday save
 
+ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MegaMarket.settings')
 
 app = Celery('MegaMarket')
@@ -18,6 +20,10 @@ app.conf.beat_schedule = {
     },
     'cache-opening-charts': {
         'task': 'api.tasks.cache_opening_charts',
+        'schedule': DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS,
+    },
+    'foreign-exchange-rates-update': {
+        'task': 'mega_market_core.foreign_exchange.get_exchange_rate_dictionary',
         'schedule': DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS,
     },
 }

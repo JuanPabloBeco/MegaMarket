@@ -4,14 +4,13 @@ from random import randrange
 
 from mega_market_core.models import Category, SubCategory, Item, Geo, TargetUser, Buy, Sell
 
-
 INITIAL_AMOUNT = 1000
 MAX_INITIAL_UNIT_PRICE = 100
 MAX_INITIAL_UNIT_PRICE_STEP = 1
 INITIAL_DATE = datetime(2018, 7, 1, 0, 0, 0)
-TRANSACTION_AMOUNT = 50
-DAY_RANGE = 150
-MAX_DAILY_TRANSACTION = 10
+TRANSACTION_AMOUNT = 100
+DAY_RANGE = 10
+MAX_DAILY_TRANSACTION = 100
 
 
 def data_generator(initial_amount=INITIAL_AMOUNT,
@@ -46,6 +45,8 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
             date=initial_date,
             target_user_id=i,
             geo=temp_geo,
+            currency_code='URU',
+            currency_symbol='$U',
             id=i,
         )
         initial_transaction.save()
@@ -68,6 +69,16 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
             temp_item_id = randrange(0, item_amount) + 1
             temp_geo_id = randrange(0, geo_amount) + 1
 
+            if temp_geo_id == 1:
+                temp_currency_code = 'UYU',
+                temp_currency_symbol = '$U',
+            elif temp_geo_id == 2:
+                temp_currency_code = 'ARS',
+                temp_currency_symbol = '$A',
+            elif temp_geo_id == 3:
+                temp_currency_code = 'BRL',
+                temp_currency_symbol = 'R$',
+
             transaction_amount = randrange(initial_amount * 0.1, initial_amount * 0.9)
             transaction_price = Item(id=temp_item_id).generate_next_price()
 
@@ -79,6 +90,8 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                     date=day,
                     target_user_id=target_user_amount_id,
                     geo_id=temp_geo_id,
+                    currency_code=temp_currency_code,
+                    currency_symbol=temp_currency_symbol,
                 )
             else:
                 temp_transaction = Sell(
@@ -88,6 +101,8 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                     date=day,
                     target_user_id=target_user_amount_id,
                     geo_id=temp_geo_id,
+                    currency_code=temp_currency_code,
+                    currency_symbol=temp_currency_symbol,
                 )
 
             # logging.warning(temp_transaction)
@@ -102,6 +117,8 @@ def data_generator(initial_amount=INITIAL_AMOUNT,
                 logging.error('date %s' % temp_transaction.date)
                 logging.error('target_user %s' % temp_transaction.target_user)
                 logging.error('geo_id %s' % temp_transaction.geo_id)
+                logging.error('currency_code %s' % temp_transaction.currency_code)
+                logging.error('currency_symbol %s' % temp_transaction.currency_symbol)
         logging.warning('%s', day)
 
     return unit_prices

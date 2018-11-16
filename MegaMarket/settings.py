@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from decouple import config
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -187,4 +188,4 @@ SUB_CATEGORY_INDICATOR = 'S'
 ITEM_INDICATOR = 'I'
 ALL_INDICATOR = 'X'
 
-
+EXCHANGE_RATE_API_KEY = config('EXCHANGE_RATE_API_KEY')

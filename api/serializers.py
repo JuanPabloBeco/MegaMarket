@@ -71,8 +71,8 @@ class EarnSerializer(serializers.Serializer):
             sold_this_date = date_sold_dict.get(day)
             bought_this_date = date_bought_dict.get(day)
 
-            if (sold_this_date is not None) & (
-                    bought_this_date is not None):  # This must stay only until values are assign to the emtpy earned dates
+            if (sold_this_date is not None) & (bought_this_date is not None):
+                # This must stay only until values are assign to the emtpy earned dates
                 if sold_this_date and bought_this_date:
                     earned_this_date = {
                         'data_sum': round(sold_this_date.get('data_sum') - bought_this_date.get('data_sum'), 2),
@@ -92,8 +92,8 @@ class EarnSerializer(serializers.Serializer):
                         day,
                         DAILY_OPENING_API_REQUEST_CACHE_INTERVAL_SECONDS,
                     )
-            # else:
-            #     earned_this_date = {'data_sum': 0, 'date': day}
+            else:
+                earned_this_date = {'data_sum': 0, 'date': day}
 
         return earned_list
 
@@ -241,11 +241,33 @@ class GeoSerializer(serializers.ModelSerializer):
     """
 Filter format
 data = {
-            "date_to": "2018-10-31",
-            "date_from": "2018-9-1",
+            "date__lt": "2018-10-31",
+            "date__gt": "2018-9-1",
             "item_id": 1,
             "geo_id": 1,
             "target_user_id": 1,
         }
     
     """
+
+
+def get_chart_data(filter_data):  # I had an error when the self wasn't there
+    bought_serializer = BuySerializer(data=filter_data)
+    bought_serializer.is_valid()
+    bought_data = list(bought_serializer.data.get("bought_report_chart"))
+    sold_serializer = SellSerializer(data=filter_data)
+    sold_serializer.is_valid()
+    sold_data = list(sold_serializer.data.get("sold_report_chart"))
+    earned_serializer = EarnSerializer(data={
+        'filter_data': filter_data.copy(),
+        'bought_data': bought_data,
+        'sold_data': sold_data,
+        'send_to_cache': True,
+    })
+    earned_serializer.is_valid()
+    earned_data = earned_serializer.data.get("earned_report_chart")
+    return {
+        "earned_report_chart": earned_data,
+        "bought_report_chart": bought_data,
+        "sold_report_chart": sold_data,
+    }

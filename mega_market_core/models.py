@@ -4,7 +4,8 @@ from random import randrange, getrandbits
 from django.db import models
 from django.db.models import Sum, ExpressionWrapper, F
 
-COUNTRY_CHOICES = (('URUGUAY', 'Uruguay'),)
+COUNTRY_CHOICES = (('URUGUAY', 'Uruguay'), ('ARGENTINA', 'Argentina'), ('BRASIL', 'Brasil'))
+CURRENCY_CHOICES = (('UYU', 'Uruguay'), ('ARS', 'Argentina'), ('BRL', 'Brasil'))
 relative_maximum_percent_range = 20  # Integers percentage numbers only
 
 CHART_DATE_FORMAT_FOR_DATETIME = "%Y-%m-%d"
@@ -81,6 +82,8 @@ class Buy(models.Model):
     target_user = models.ForeignKey(TargetUser, related_name="buy_transactions", on_delete=models.PROTECT)
     geo = models.ForeignKey(Geo, related_name="buy_transactions", on_delete=models.PROTECT)
     item = models.ForeignKey(Item, related_name="buy_transactions", on_delete=models.PROTECT)
+    currency_code = models.CharField(max_length=100, choices=CURRENCY_CHOICES, null=True)
+    currency_symbol = models.CharField(max_length=100, choices=CURRENCY_CHOICES, null=True)
 
     # def save(self, *args, **kwargs):
     #     item = self.item
@@ -139,6 +142,8 @@ class Sell(models.Model):
     target_user = models.ForeignKey(TargetUser, related_name="sell_transactions", on_delete=models.PROTECT)
     geo = models.ForeignKey(Geo, related_name="sell_transactions", on_delete=models.PROTECT)
     item = models.ForeignKey(Item, related_name="sell_transactions", on_delete=models.PROTECT)
+    currency_code = models.CharField(max_length=100, choices=CURRENCY_CHOICES, null=True)
+    currency_symbol = models.CharField(max_length=100, choices=CURRENCY_CHOICES, null=True)
 
     # def save(self, *args, **kwargs):
     #     item = self.item
